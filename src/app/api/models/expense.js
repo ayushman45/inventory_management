@@ -22,3 +22,5 @@ const expenseSchema = new mongoose.Schema({
         required: true
     }
 })
+
+export const Expense = mongoose.models.Expense || mongoose.model("Expense", expenseSchema);

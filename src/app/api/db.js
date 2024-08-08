@@ -1,12 +1,16 @@
-
+"use server"
 import { config } from "../config";
-import { connect } from 'mongoose';
+import { connect,disconnect } from 'mongoose';
+export async function connectDB(){
+    let res = await connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true })
+    console.log("DB connected successfully");
+    
+}
 
-connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true })
-.then(() => {
-    console.log("DB connection established");
-})
-.catch((err) => {
-    console.error("Failed to connect to MongoDB:", err);
-});
+export async function disconnectDB(){
+    let res = await disconnect();
+    console.log("DB disconnected successfully");
+
+}
+
 

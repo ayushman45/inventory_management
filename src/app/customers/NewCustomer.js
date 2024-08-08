@@ -1,9 +1,11 @@
 "iuse client";
 
-import { Button, DatePicker, Form, Input } from "antd";
+import { Button, DatePicker, Form, Input, message } from "antd";
 import React, { useRef, useState } from "react";
 import { getInvUser, getToken } from "../helper/token";
 import { getLocaleDate } from "../helper/date";
+import { createOrUpdateCustomer } from "../api/handlers/customerHandler";
+import { parseString, stringifyObject } from "../jsonHelper";
 
 function NewCustomer({ onClose }) {
   const nameRef = useRef(null);
@@ -22,7 +24,16 @@ function NewCustomer({ onClose }) {
     let address = addressRef.current.input.value;
     let city = cityRef.current.input.value;
     let user = await getInvUser().username;
-    console.log(name, email, phone, dob, address, city, user);
+    let resp = await createOrUpdateCustomer(stringifyObject({ name, email, phone, dob, address, city, user }));
+    let res = parseString(resp);
+    if (res.status === 200) {
+      message.success("Customer Created Successfully");
+      onClose();
+    }
+    else {
+     message.error("Failed to create customer");
+     onClose();
+    }
   };
 
   return (

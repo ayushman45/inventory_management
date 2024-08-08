@@ -1,10 +1,10 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Button, Form, Input, message } from "antd";
 import { loginUser } from "../api/handlers/userLogin";
 import { parseString, stringifyObject } from "../jsonHelper";
 import { useRouter } from "next/navigation";
-import { setInvUser } from "../helper/token";
+import { getToken, setInvUser, setToken } from "../helper/token";
 
 function Login() {
   const navigate = useRouter();
@@ -18,12 +18,21 @@ function Login() {
     let response = parseString(res);
     if (response.status === 200) {
       message.success("Login Successful");
+      setToken(response.data);
       setInvUser(response.data);
       navigate.push("/dashboard");
     } else {
       message.error("Invalid Credentials");
     }
   };
+
+  useEffect(()=>{
+    if(getToken()){
+        navigate.push("/dashboard");
+
+    }
+
+  },[])
   return (
     <div>
       <Form
