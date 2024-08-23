@@ -1,3 +1,5 @@
+"use client"
+
 export const getToken = () => {
     let token =JSON.parse(window.localStorage.getItem('inv-management-token'));
     //dwst verify token

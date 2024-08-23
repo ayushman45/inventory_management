@@ -1,36 +1,12 @@
-"use client"
+import dynamic from 'next/dynamic';
+import React from 'react'
 
-import React, { useEffect } from 'react'
-import { getToken, getUser } from '../helper/token';
-import { useRouter } from 'next/navigation';
-import { Button } from 'antd';
+const DynamicContent = dynamic(()=>{return import('./Dashboard')}, {ssr: false});
 
-function Dashboard() {
-  const navigate = useRouter();
-  const user = getUser();
-  
-  useEffect(() =>{
-    let token = getToken();
-    console.log(token);
-    if(!token){
-      navigate.push("/login");
-
-    }
-
-  },[]);
-
+function Page() {
   return (
-    <div className='col-flex wid-100'>
-      <div>Dashboard</div>
-      <div className='row-flex wid-100' style={{gap:"10px",flexWrap:"wrap"}}>
-        <Button type='primary' onClick={()=>navigate.push('/customers')}>Customers</Button>
-        <Button type='primary' onClick={()=>navigate.push('/vendors')}>Vendors</Button>
-        <Button type='primary' onClick={()=>navigate.push('/services')}>Services</Button>
-        <Button type='primary' onClick={()=>navigate.push('/products')}>Products</Button>
-      </div>
-    </div>
-    
+    <DynamicContent />
   )
 }
 
-export default Dashboard
+export default Page
