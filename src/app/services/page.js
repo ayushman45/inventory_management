@@ -3,46 +3,46 @@
 import { Button, message, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import ModalHelper from "../Components/ModalHelper";
-import NewCustomer from "./NewCustomer";
-import { getCustomersForUser } from "../helper/getCustomers";
+import NewService from "./NewService";
+import { getServicesForUser } from "../helper/getServices";
 import { getUser } from "../helper/token";
-import { importCustomersFromCSV } from "../api/handlers/customerHandler";
+import { importServicesFromCSV } from "../api/handlers/serviceHandler";
 import { parseString, stringifyObject } from "../jsonHelper";
 import Papa from "papaparse";
 import Searchbar from "../Components/Searchbar";
 import { useRouter } from "next/navigation";
 import { config } from "../config";
 
-function Customers() {
+function Services() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [customers, setCustomers] = useState(null);
+  const [services, setServices] = useState(null);
   const user = getUser();
   const navigate = useRouter();
 
-  const fetchCustomers = async () => {
-    let customers = await getCustomersForUser(user);
-    setCustomers(customers);
+  const fetchServices = async () => {
+    let services = await getServicesForUser(user);
+    setServices(services);
   };
 
   const columns = [
     {
       title: "Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "serviceName",
+      key: "serviceName",
     },
     {
-      title: "Phone Number",
-      dataIndex: "phone",
-      key: "phone",
+      title: "Type",
+      dataIndex: "type",
+      key: "type",
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
     },
   ];
 
-  const handleImportCustomers = () => {
+  const handleImportServices = () => {
     let input = document.createElement("input");
     input.type = "file";
     input.accept = ".csv";
@@ -53,15 +53,15 @@ function Customers() {
         skipEmptyLines: true,
         complete: async function (results) {
           //dwst verify headers
-          let res = await importCustomersFromCSV(
+          let res = await importServicesFromCSV(
             stringifyObject({ user, data: results.data })
           );
           let response = parseString(res);
           if (response.status === 200) {
-            message.success("Customers Imported Successfully");
-            fetchCustomers();
+            message.success("Services Imported Successfully");
+            fetchServices();
           } else {
-            message.error("Failed to import customers");
+            message.error("Failed to import services");
           }
         },
       });
@@ -70,7 +70,7 @@ function Customers() {
   };
 
   const handleSearch = (id) => {
-    navigate.push(`/customers/${id}`);
+    navigate.push(`/services/${id}`);
   };
 
   useEffect(() => {
@@ -78,27 +78,27 @@ function Customers() {
       return;
     }
 
-    fetchCustomers();
+    fetchServices();
   }, [user]);
 
   return (
     <div>
       <div className="row-flex wid-100 sp-between">
         <div className="row-flex wid-50 sp-between">
-        {customers && (
+        {services && (
         <Searchbar
-          arrOfObj={customers}
-          displayField={"name"}
+          arrOfObj={services}
+          displayField={"serviceName"}
           onClickHandler={handleSearch}
         />
       )}
         </div>
       <div className="row-flex wid-50 flex-end" style={{gap:"10px"}}>
         <Button type="primary" onClick={() => setIsModalOpen((prev) => !prev)}>
-          Add New Customer
+          Add New Service
         </Button>
-        <Button type="primary" onClick={handleImportCustomers}>
-          Import Customers
+        <Button type="primary" onClick={handleImportServices}>
+          Import Services
         </Button>
       </div>
       </div>
@@ -106,18 +106,18 @@ function Customers() {
       <br />
 
       <ModalHelper
-        ViewComponent={NewCustomer}
+        ViewComponent={NewService}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
       />
-      {customers?.length > 0 && (
+      {services?.length > 0 && (
         <Table 
-        dataSource={customers} 
+        dataSource={services} 
         columns={columns} 
         rowKey={'_id'}
         onRow={(record, rowIndex) => {
           return {
-            onClick: (event) => {navigate.push(`/customers/${record._id}`)},
+            onClick: (event) => {navigate.push(`/services/${record._id}`)},
           }}}
         />
       )}
@@ -128,4 +128,4 @@ function Customers() {
   );
 }
 
-export default Customers;
+export default Services;

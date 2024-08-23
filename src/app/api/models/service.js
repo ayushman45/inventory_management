@@ -2,25 +2,20 @@
 import mongoose from "mongoose";
 
 const serviceSchema = new mongoose.Schema({
-    customerId:{
+    serviceName:{
         type: String,
         required: true
     },
-    service:{
+    type:{
         type: String,
-        required: true
-    },
-    price: {
-        type: Number,
-        required: true
     },
     description: {
         type: String,
         required: true
     },
-    date:{
-        type: Date,
-        default: Date.now,
+    user:{
+        type: String,
+        required: true
     }
     
 });

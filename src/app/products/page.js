@@ -3,46 +3,46 @@
 import { Button, message, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import ModalHelper from "../Components/ModalHelper";
-import NewCustomer from "./NewCustomer";
-import { getCustomersForUser } from "../helper/getCustomers";
+import NewProduct from "./NewProduct";
+import { getProductsForUser } from "../helper/getProducts";
 import { getUser } from "../helper/token";
-import { importCustomersFromCSV } from "../api/handlers/customerHandler";
+import { importProductsFromCSV } from "../api/handlers/productHandler";
 import { parseString, stringifyObject } from "../jsonHelper";
 import Papa from "papaparse";
 import Searchbar from "../Components/Searchbar";
 import { useRouter } from "next/navigation";
 import { config } from "../config";
 
-function Customers() {
+function Products() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [customers, setCustomers] = useState(null);
+  const [products, setProducts] = useState(null);
   const user = getUser();
   const navigate = useRouter();
 
-  const fetchCustomers = async () => {
-    let customers = await getCustomersForUser(user);
-    setCustomers(customers);
+  const fetchProducts = async () => {
+    let products = await getProductsForUser(user);
+    setProducts(products);
   };
 
   const columns = [
     {
       title: "Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "productName",
+      key: "productName",
     },
     {
-      title: "Phone Number",
-      dataIndex: "phone",
-      key: "phone",
+      title: "Company",
+      dataIndex: "company",
+      key: "company",
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
     },
   ];
 
-  const handleImportCustomers = () => {
+  const handleImportProducts = () => {
     let input = document.createElement("input");
     input.type = "file";
     input.accept = ".csv";
@@ -53,15 +53,15 @@ function Customers() {
         skipEmptyLines: true,
         complete: async function (results) {
           //dwst verify headers
-          let res = await importCustomersFromCSV(
+          let res = await importProductsFromCSV(
             stringifyObject({ user, data: results.data })
           );
           let response = parseString(res);
           if (response.status === 200) {
-            message.success("Customers Imported Successfully");
-            fetchCustomers();
+            message.success("Products Imported Successfully");
+            fetchProducts();
           } else {
-            message.error("Failed to import customers");
+            message.error("Failed to import products");
           }
         },
       });
@@ -70,7 +70,7 @@ function Customers() {
   };
 
   const handleSearch = (id) => {
-    navigate.push(`/customers/${id}`);
+    navigate.push(`/products/${id}`);
   };
 
   useEffect(() => {
@@ -78,27 +78,27 @@ function Customers() {
       return;
     }
 
-    fetchCustomers();
+    fetchProducts();
   }, [user]);
 
   return (
     <div>
       <div className="row-flex wid-100 sp-between">
         <div className="row-flex wid-50 sp-between">
-        {customers && (
+        {products && (
         <Searchbar
-          arrOfObj={customers}
-          displayField={"name"}
+          arrOfObj={products}
+          displayField={"productName"}
           onClickHandler={handleSearch}
         />
       )}
         </div>
       <div className="row-flex wid-50 flex-end" style={{gap:"10px"}}>
         <Button type="primary" onClick={() => setIsModalOpen((prev) => !prev)}>
-          Add New Customer
+          Add New Product
         </Button>
-        <Button type="primary" onClick={handleImportCustomers}>
-          Import Customers
+        <Button type="primary" onClick={handleImportProducts}>
+          Import Products
         </Button>
       </div>
       </div>
@@ -106,18 +106,18 @@ function Customers() {
       <br />
 
       <ModalHelper
-        ViewComponent={NewCustomer}
+        ViewComponent={NewProduct}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
       />
-      {customers?.length > 0 && (
+      {products?.length > 0 && (
         <Table 
-        dataSource={customers} 
+        dataSource={products} 
         columns={columns} 
         rowKey={'_id'}
         onRow={(record, rowIndex) => {
           return {
-            onClick: (event) => {navigate.push(`/customers/${record._id}`)},
+            onClick: (event) => {navigate.push(`/products/${record._id}`)},
           }}}
         />
       )}
@@ -128,4 +128,4 @@ function Customers() {
   );
 }
 
-export default Customers;
+export default Products;

@@ -30,5 +30,9 @@ export const removeInvUser = () => {
 
 export const getUser = () =>{
     let user = JSON.parse(window.localStorage.getItem('inv-management-user'));
+    if(!user){
+        removeInvUser();
+        return null;
+    }
     return user.username;
 }

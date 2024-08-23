@@ -7,13 +7,22 @@ const purchaseSchema = new mongoose.Schema({
     },
     productId:{
         type: String,
-        required: true
+    },
+    serviceId:{
+        type: String,
+    },
+    purchaseType:{
+        type: String,
+        enum :['service','product']
     },
     totalValue:{
         type: Number,
         required: true
+    },
+    user:{
+        type: String,
+        required: true
     }
-
 });
 
 export const Purchase = mongoose.models.Purchase || mongoose.model('Purchase',purchaseSchema);
