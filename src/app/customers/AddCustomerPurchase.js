@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Button, Select, Input } from "antd";
+import { Button, Select, Input, message } from "antd";
 import { getUser } from "../helper/token";
-import { getProductsForUser } from "../helper/getProducts";
+import { getProductsForUser, getServicesForUser } from "../helper/getProducts";
 import { useParams } from "next/navigation";
+import { getISODateString, getLocaleDate } from "../helper/date";
+import { createBill } from "../api/handlers/handleCustomerPurchase";
+import { parseString, stringifyObject } from "../jsonHelper";
+import { useRouter } from "next/navigation";
 
-function AddCustomerPurchase({ onClose }) {
+function AddCustomerPurchase() {
+  const navigate = useRouter();
   const [products, setProducts] = useState([]);
   const [billProducts, setBillProducts] = useState({});
-  const [services,setServices] = useState([]);
+  const [services, setServices] = useState([]);
   const [billServices, setBillServices] = useState({});
 
   const user = getUser();
@@ -16,12 +21,66 @@ function AddCustomerPurchase({ onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission logic
-    console.log("Form submitted with: ", billProducts);
+    let ind =0;
+  let purchases=[]
+  while(billProducts[ind] ||billServices[ind]){
+    if(billProducts[ind] && billProducts[ind].productId){
+      let temp={
+        customerId:slug,
+        productId: billProducts[ind].productId,
+        purchaseType:"product",
+        quantity: billProducts[ind].quantity,
+        totalValue: billProducts[ind].totalValue,
+        user,
+        date: getLocaleDate(new Date())
+
+      }
+      purchases.push(temp)
+    }
+    if(billServices[ind] && billServices[ind].serviceId){
+      let temp={
+        customerId:slug,
+        serviceId: billServices[ind].serviceId,
+        purchaseType:"service",
+        totalValue: billServices[ind].totalValue,
+        user,
+        date: getLocaleDate(new Date())
+
+      }
+      purchases.push(temp)
+    }
+    ind++;
+    
+  }
+    let res = await createBill(stringifyObject({
+      purchases,
+      date: getLocaleDate(new Date()),
+      customerId:slug,
+      user,
+    }));
+
+    res = parseString(res);
+    if (res.status === 200) {
+      setBillProducts({});
+      setBillServices({});
+      message.success("Bill Created Successfully");
+      navigate.push(`/bills/${res.data._id}`);
+
+    } else {
+      console.error("Error creating bill:", res.error);
+      
+    }
+
   };
 
   const getProducts = async (user) => {
     const temp = await getProductsForUser(user);
     setProducts(temp);
+  };
+
+  const getServices = async (user) => {
+    const temp = await getServicesForUser(user);
+    setServices(temp);
   };
 
   const handleBillProductDelete = (index) => {
@@ -38,28 +97,63 @@ function AddCustomerPurchase({ onClose }) {
     });
   };
 
-  const handleSelectChange = (index, value) => {
-    setBillProducts((prev) => ({
-      ...prev,
-      [index]: {
-        ...prev[index],
-        productId: value,
-      },
-    }));
+  const handleBillServiceDelete = (index) => {
+    setBillServices((prev) => {
+      let temp = {};
+      let ind = 0;
+      for (let i in prev) {
+        if (i !== index) {
+          temp[ind] = prev[i];
+          ind++;
+        }
+      }
+      return temp;
+    });
   };
 
-  const handleInputChange = (index, field, value) => {
-    setBillProducts((prev) => ({
-      ...prev,
-      [index]: {
-        ...prev[index],
-        [field]: value,
-      },
-    }));
+  const handleSelectChange = (index, value, type) => {
+    if (type === "product") {
+      setBillProducts((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          productId: value,
+        },
+      }));
+    } else {
+      setBillServices((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          serviceId: value,
+        },
+      }));
+    }
+  };
+
+  const handleInputChange = (index, field, value, type) => {
+    if (type === "product") {
+      setBillProducts((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          [field]: value,
+        },
+      }));
+    } else {
+      setBillServices((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          [field]: value,
+        },
+      }));
+    }
   };
 
   useEffect(() => {
     getProducts(user);
+    getServices(user);
   }, [user]);
 
   return (
@@ -70,7 +164,7 @@ function AddCustomerPurchase({ onClose }) {
           <label>
             Product Name:
             <Select
-              onChange={(value) => handleSelectChange(index, value)}
+              onChange={(value) => handleSelectChange(index, value, "product")}
               style={{ width: "100%" }}
               options={products.map((product) => ({
                 value: product._id,
@@ -85,7 +179,7 @@ function AddCustomerPurchase({ onClose }) {
               type="number"
               placeholder="Enter Quantity"
               onChange={(e) =>
-                handleInputChange(index, "quantity", e.target.value)
+                handleInputChange(index, "quantity", e.target.value, "product")
               }
               value={billProducts[index]?.quantity || ""}
             />
@@ -96,28 +190,35 @@ function AddCustomerPurchase({ onClose }) {
               type="number"
               placeholder="Enter Price"
               onChange={(e) =>
-                handleInputChange(index, "totalValue", e.target.value)
+                handleInputChange(
+                  index,
+                  "totalValue",
+                  e.target.value,
+                  "product"
+                )
               }
               value={billProducts[index]?.totalValue || ""}
             />
           </label>
           <br />
           <br />
-          <Button type="primary" danger onClick={() => handleBillProductDelete(index)}>
+          <Button
+            type="primary"
+            danger
+            onClick={() => handleBillProductDelete(index)}
+          >
             Delete Product
           </Button>
         </div>
       ))}
       <Button
-        onClick={() =>
-          {
-            const newIndex = Object.keys(billProducts).length;
-            setBillProducts((prev) => ({
-              ...prev,
-              [newIndex]: { productId: "", quantity: 0, totalValue: 0 },
-            }));
-          }
-        }
+        onClick={() => {
+          const newIndex = Object.keys(billProducts).length;
+          setBillProducts((prev) => ({
+            ...prev,
+            [newIndex]: { productId: "", quantity: 0, totalValue: 0 },
+          }));
+        }}
         type="primary"
       >
         Add Product
@@ -133,7 +234,7 @@ function AddCustomerPurchase({ onClose }) {
           <label>
             Service Name:
             <Select
-              onChange={(value) => handleSelectChange(index, value)}
+              onChange={(value) => handleSelectChange(index, value, "service")}
               style={{ width: "100%" }}
               options={services.map((service) => ({
                 value: service._id,
@@ -148,31 +249,38 @@ function AddCustomerPurchase({ onClose }) {
               type="number"
               placeholder="Enter Price"
               onChange={(e) =>
-                handleInputChange(index, "totalValue", e.target.value)
+                handleInputChange(
+                  index,
+                  "totalValue",
+                  e.target.value,
+                  "service"
+                )
               }
               value={billServices[index]?.totalValue || ""}
             />
           </label>
           <br />
           <br />
-          <Button type="primary" danger onClick={() => handleBillProductDelete(index)}>
-            Delete Product
+          <Button
+            type="primary"
+            danger
+            onClick={() => handleBillServiceDelete(index)}
+          >
+            Delete Service
           </Button>
         </div>
       ))}
       <Button
-        onClick={() =>
-          {
-            const newIndex = Object.keys(billProducts).length;
-            setBillProducts((prev) => ({
-              ...prev,
-              [newIndex]: { productId: "", quantity: 0, totalValue: 0 },
-            }));
-          }
-        }
+        onClick={() => {
+          const newIndex = Object.keys(billServices).length;
+          setBillServices((prev) => ({
+            ...prev,
+            [newIndex]: { serviceId: "", totalValue: 0 },
+          }));
+        }}
         type="primary"
       >
-        Add Product
+        Add Service
       </Button>
       <br />
       <br />

@@ -40,6 +40,11 @@ function Products() {
       dataIndex: "description",
       key: "description",
     },
+    {
+        title:"Quantity",
+        dataIndex: "quantity",
+        key: "quantity",
+    }
   ];
 
   const handleImportProducts = () => {

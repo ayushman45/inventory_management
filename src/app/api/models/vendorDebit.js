@@ -1,7 +1,12 @@
 import mongoose from "mongoose";
 
 const vendorDebitSchema = new mongoose.Schema({
-    vendorPurchase:{
+    billId:{
+        type: String,
+        required: true
+    },
+
+    vendorId:{
         type: String,
         required: true
     },
@@ -13,14 +18,13 @@ const vendorDebitSchema = new mongoose.Schema({
 
     paymentType:{
         type: String,
-        required: true
     },
 
     date:{
         type: Date,
-        default: Date.now
-    }
+        default: Date.now()
+    },
 
 });
 
-export const VendorDebit = mongoose.models.VendorDebit || mongoose.model("VendorDebit", vendorDebitSchema);
+export const VendorDebit = mongoose.models?.VendorDebit || mongoose.model("VendorDebit", vendorDebitSchema);

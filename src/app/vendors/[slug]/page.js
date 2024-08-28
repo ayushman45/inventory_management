@@ -9,6 +9,8 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { message, Tabs, Typography } from "antd";
 import { getLocaleDate } from "@/app/helper/date";
+import AddVendorPurchase from "../AddVendorPurchase";
+import ViewBills from "../ViewBills";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -165,6 +167,16 @@ function Vendor() {
         label: "Delete",
         children: <div>Delete Vendor</div>,
       },
+      {
+        key: "4",
+        label:"Add Vendor Purchase",
+        children: <AddVendorPurchase />
+      },
+      {
+        key: "5",
+        label:"View Vendor Purchase",
+        children: <ViewBills />
+      }
     ];
 
     setTabItems(items);

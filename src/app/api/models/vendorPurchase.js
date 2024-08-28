@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
 
 const vendorPurchaseSchema = new mongoose.Schema({
-    vendor:{
+    vendorId:{
         type: String,
         required: true
     },
-    product:{
+    productId:{
+        type: String,
+        required: true
+    },
+    productName:{
         type: String,
         required: true
     },
@@ -20,6 +24,10 @@ const vendorPurchaseSchema = new mongoose.Schema({
     date:{
         type: Date,
         default: Date.now
+    },
+    user:{
+        type: String,
+        required: true
     }
 });
 

@@ -13,11 +13,19 @@ const purchaseSchema = new mongoose.Schema({
     },
     purchaseType:{
         type: String,
-        enum :['service','product']
+        enum :['service','product'],
+        required: true
+    },
+    quantity:{
+        type: Number,
     },
     totalValue:{
         type: Number,
         required: true
+    },
+    date:{
+        type: String,
+        default: new Date(Date.now()).toLocaleDateString()
     },
     user:{
         type: String,

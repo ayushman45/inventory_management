@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 import { Purchase } from './purchase';
 
 
-const billSchema = new mongoose.Schema({
-    customerId:{
+const vendorBillSchema = new mongoose.Schema({
+    vendorId:{
         type: String,
         required: true
     },
@@ -22,4 +22,4 @@ const billSchema = new mongoose.Schema({
 
 });
 
-export const Bill = mongoose.models.Bill || mongoose.model('Bill', billSchema);
+export const VendorBill = mongoose.models.VendorBill || mongoose.model('VendorBill', vendorBillSchema);

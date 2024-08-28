@@ -5,9 +5,9 @@ const paymentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    paymentFor:{
+   billId:{
         type: String,
-        enum :['service','fees','product']
+        required: true
     },
     amount:{
         type: Number,
@@ -19,8 +19,8 @@ const paymentSchema = new mongoose.Schema({
     },
     date:{
         type: Date,
-        default: Date.now,
+        default: Date.now(),
     }
 });
 
-export const Payment = mongoose.models.Payment || mongoose.model('Payment',paymentSchema);
+export const Payment = mongoose.models?.Payment || mongoose.model('Payment',paymentSchema);

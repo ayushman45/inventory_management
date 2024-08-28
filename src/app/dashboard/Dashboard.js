@@ -22,6 +22,7 @@ function Dashboard() {
   return (
     <div className='col-flex wid-100'>
       <div>Dashboard</div>
+      <br />
       <div className='row-flex wid-100' style={{gap:"10px",flexWrap:"wrap"}}>
         <Button type='primary' onClick={()=>navigate.push('/customers')}>Customers</Button>
         <Button type='primary' onClick={()=>navigate.push('/vendors')}>Vendors</Button>

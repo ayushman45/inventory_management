@@ -11,6 +11,7 @@ import { Button, Tabs, Typography } from "antd";
 import { getLocaleDate } from "@/app/helper/date";
 import AddCustomerPurchase from "../AddCustomerPurchase";
 import ModalHelper from "@/app/Components/ModalHelper";
+import ViewBills from "../ViewBills";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -164,6 +165,11 @@ function Customer() {
         label: "Add Bills",
         children: <AddCustomerPurchase />,
       },
+      {
+        key: "5",
+        label: "View Bills",
+        children: <ViewBills />,
+      }
     ];
 
     setTabItems(items);
