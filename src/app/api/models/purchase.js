@@ -11,6 +11,10 @@ const purchaseSchema = new mongoose.Schema({
     serviceId:{
         type: String,
     },
+    description:{
+        type: String,
+        required: true,
+    },
     purchaseType:{
         type: String,
         enum :['service','product'],

@@ -11,7 +11,6 @@ const vendorSchema = new mongoose.Schema({
     },
     email:{
         type:String,
-        required:true
     },
     address:{
         type:String,

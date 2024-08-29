@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { Purchase } from './purchase';
 
 
 const billSchema = new mongoose.Schema({

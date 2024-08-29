@@ -28,6 +28,7 @@ function AddCustomerPurchase() {
       let temp={
         customerId:slug,
         productId: billProducts[ind].productId,
+        description:billProducts[ind].productName,
         purchaseType:"product",
         quantity: billProducts[ind].quantity,
         totalValue: billProducts[ind].totalValue,
@@ -40,6 +41,7 @@ function AddCustomerPurchase() {
     if(billServices[ind] && billServices[ind].serviceId){
       let temp={
         customerId:slug,
+        description:billServices[ind].serviceName,
         serviceId: billServices[ind].serviceId,
         purchaseType:"service",
         totalValue: billServices[ind].totalValue,
@@ -68,7 +70,7 @@ function AddCustomerPurchase() {
 
     } else {
       console.error("Error creating bill:", res.error);
-      
+
     }
 
   };
@@ -111,13 +113,14 @@ function AddCustomerPurchase() {
     });
   };
 
-  const handleSelectChange = (index, value, type) => {
+  const handleSelectChange = (index, product, type) => {
     if (type === "product") {
       setBillProducts((prev) => ({
         ...prev,
         [index]: {
           ...prev[index],
-          productId: value,
+          productId: product.value,
+          productName: product.label
         },
       }));
     } else {
@@ -125,7 +128,8 @@ function AddCustomerPurchase() {
         ...prev,
         [index]: {
           ...prev[index],
-          serviceId: value,
+          serviceId: product.value,
+          serviceName: product.label,
         },
       }));
     }
@@ -164,7 +168,7 @@ function AddCustomerPurchase() {
           <label>
             Product Name:
             <Select
-              onChange={(value) => handleSelectChange(index, value, "product")}
+              onChange={(value,product) => handleSelectChange(index, product, "product")}
               style={{ width: "100%" }}
               options={products.map((product) => ({
                 value: product._id,
@@ -234,7 +238,7 @@ function AddCustomerPurchase() {
           <label>
             Service Name:
             <Select
-              onChange={(value) => handleSelectChange(index, value, "service")}
+              onChange={(value,product) => handleSelectChange(index, product, "service")}
               style={{ width: "100%" }}
               options={services.map((service) => ({
                 value: service._id,

@@ -2,7 +2,7 @@
 
 import { updateOrCreateUser } from "@/app/api/handlers/handleUsers";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
-import { Typography, Form, Input, Select, Button } from "antd";
+import { Typography, Form, Input, Select, Button, message } from "antd";
 import { useParams } from "next/navigation";
 import React, { useRef } from "react";
 const { Title } = Typography;
@@ -22,7 +22,15 @@ function page() {
     const academyEnabled = academyEnabledRef.current.nativeElement.textContent==="Yes";
     const adminUser = slug;
     let res=await updateOrCreateUser(stringifyObject({ username, password, adminUser, role,academyEnabled }));
+    res = parseString(res);
+    if(res.status===200){
+      message.success("User Added !!");
+      
+    }
+    else{
+      message.error(res.message||"Internal Server Error");
 
+    }
   };
 
 

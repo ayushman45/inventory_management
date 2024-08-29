@@ -99,4 +99,25 @@ export async function getVendorForBill(req){
     }
 }
 
+export async function getCustomerForBill(req){
+    try{
+        await connectDB();
+        let { billId } = JSON.parse(req);
+        let bill = await Bill.findById(billId);
+        if(!bill){
+            return send({ status:status.ERROR, message:"Customer not found"});
+        }
+        return send({status:status.SUCCESS, data:bill.customerId});
+        
+    } catch (error) {
+        return send({ status:status.INTERNAL_SERVER_ERROR, message: "An error occurred while processing your request" });
+
+    }
+    finally{
+        await disconnectDB();
+        
+    }
+}
+
+
 

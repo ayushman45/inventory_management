@@ -7,7 +7,7 @@ import { getUser } from "@/app/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Button, Tabs, Typography } from "antd";
+import { Button, message, Tabs, Typography } from "antd";
 import { getLocaleDate } from "@/app/helper/date";
 import AddCustomerPurchase from "../AddCustomerPurchase";
 import ModalHelper from "@/app/Components/ModalHelper";
