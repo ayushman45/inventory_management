@@ -2,7 +2,7 @@
 import {
   createOrUpdateVendor,
   getVendor,
-} from "@/app/api/handlers/vendorHandler";
+} from "@/app/api/handlers/handleVendors";
 import { getUser } from "@/app/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { useParams } from "next/navigation";

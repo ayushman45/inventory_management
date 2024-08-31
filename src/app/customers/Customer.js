@@ -6,7 +6,7 @@ import ModalHelper from "../Components/ModalHelper";
 import NewCustomer from "./NewCustomer";
 import { getCustomersForUser } from "../helper/getCustomers";
 import { getUser } from "../helper/token";
-import { importCustomersFromCSV } from "../api/handlers/customerHandler";
+import { importCustomersFromCSV } from "../api/handlers/handleCustomers";
 import { parseString, stringifyObject } from "../jsonHelper";
 import Papa from "papaparse";
 import Searchbar from "../Components/Searchbar";

@@ -9,6 +9,10 @@ const expenseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    note:{
+        type: String,
+        default: "N/A"
+    },
     amount:{
         type: Number,
         required: true
@@ -23,4 +27,4 @@ const expenseSchema = new mongoose.Schema({
     }
 })
 
-export const Expense = mongoose.models.Expense || mongoose.model("Expense", expenseSchema);
+export const Expense = mongoose.models?.Expense || mongoose.model("Expense", expenseSchema);

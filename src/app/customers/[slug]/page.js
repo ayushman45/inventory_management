@@ -2,7 +2,7 @@
 import {
   createOrUpdateCustomer,
   getCustomer,
-} from "@/app/api/handlers/customerHandler";
+} from "@/app/api/handlers/handleCustomers";
 import { getUser } from "@/app/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { useParams } from "next/navigation";

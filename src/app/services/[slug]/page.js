@@ -2,7 +2,7 @@
 import {
   createOrUpdateService,
   getService,
-} from "@/app/api/handlers/serviceHandler";
+} from "@/app/api/handlers/handleServices";
 import { getUser } from "@/app/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { useParams } from "next/navigation";

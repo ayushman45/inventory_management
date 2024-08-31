@@ -94,14 +94,49 @@ export async function updatePurchase(req) {
         });
       }
     }
+    else{
+        let purchaseObj = await Purchase.findById(purchase._id);
+        let product = purchaseObj.purchaseType === 'product'? await Product.findById(purchase.productId) : await Service.findById(purchase.serviceId);
+        if (purchaseObj && product) {
+          if(purchaseObj.purchaseType === 'product'){
+            product.quantity =
+                parseInt(product.quantity) + parseInt(purchaseObj.quantity);
+            product.quantity =
+                parseInt(product.quantity) - parseInt(purchase.quantity);
+            await product.save();
+
+            purchaseObj.quantity = parseInt(purchase.quantity);
+            purchaseObj.totalValue = parseInt(purchase.totalValue);
+            await purchaseObj.save();
+
+          }
+          else{
+            purchaseObj.totalValue = parseInt(purchase.totalValue);
+            await purchaseObj.save();
+
+          }
+
+          return send({ status: status.SUCCESS, message: "Edit Successful" });
+
+        } else {
+          return send({
+            status: status.NOT_FOUND,
+            message: "Product or Purchase Not Found",
+          });
+
+        }
+    }
+
   } catch (err) {
     console.log(err.message);
     return send({
       status: status.INTERNAL_SERVER_ERROR,
       message: "An error occurred while processing your request",
     });
+
   } finally {
     await disconnectDB();
+    
   }
 }
 
@@ -189,7 +224,7 @@ export const getBillProducts = async (req) => {
         return send({ status: status.SUCCESS, data: resStr });
     else
         return send({ status: status.NOT_FOUND, message: "No products found" });
-    
+
     } catch (err) {
       console.error(err);
       return send({

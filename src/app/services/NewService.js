@@ -4,7 +4,7 @@ import { Button, DatePicker, Form, Input, message } from "antd";
 import React, { useRef, useState } from "react";
 import { getInvUser, getToken } from "../helper/token";
 import { getLocaleDate } from "../helper/date";
-import { createOrUpdateService } from "../api/handlers/serviceHandler";
+import { createOrUpdateService } from "../api/handlers/handleServices";
 import { parseString, stringifyObject } from "../jsonHelper";
 
 function NewService({ onClose }) {

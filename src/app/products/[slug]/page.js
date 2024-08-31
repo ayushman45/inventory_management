@@ -2,7 +2,7 @@
 import {
   createOrUpdateProduct,
   getProduct,
-} from "@/app/api/handlers/productHandler";
+} from "@/app/api/handlers/handleProducts";
 import { getUser } from "@/app/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { useParams } from "next/navigation";

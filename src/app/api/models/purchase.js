@@ -28,8 +28,8 @@ const purchaseSchema = new mongoose.Schema({
         required: true
     },
     date:{
-        type: String,
-        default: new Date(Date.now()).toLocaleDateString()
+        type: Date,
+        default: Date.now
     },
     user:{
         type: String,

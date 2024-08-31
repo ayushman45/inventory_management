@@ -16,8 +16,8 @@ const vendorBillSchema = new mongoose.Schema({
         required: true
     },
     date:{
-        type: String,
-        default: new Date(Date.now()).toLocaleDateString()
+        type: Date,
+        default: Date.now
     }
 
 });

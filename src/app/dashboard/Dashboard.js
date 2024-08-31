@@ -21,13 +21,15 @@ function Dashboard() {
 
   return (
     <div className='col-flex wid-100'>
-      <div>Dashboard</div>
       <br />
-      <div className='row-flex wid-100' style={{gap:"10px",flexWrap:"wrap"}}>
+      <div className='row-flex wid-100' style={{justifyContent:"center"}}>
+      <div className='row-flex ' style={{gap:"20px",flexWrap:"wrap"}}>
         <Button type='primary' onClick={()=>navigate.push('/customers')}>Customers</Button>
         <Button type='primary' onClick={()=>navigate.push('/vendors')}>Vendors</Button>
         <Button type='primary' onClick={()=>navigate.push('/services')}>Services</Button>
         <Button type='primary' onClick={()=>navigate.push('/products')}>Products</Button>
+        <Button type='primary' onClick={()=>navigate.push('/expenses')}>Expenses</Button>
+      </div>
       </div>
     </div>
     

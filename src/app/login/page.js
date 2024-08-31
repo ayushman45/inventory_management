@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import { Button, Form, Input, message } from "antd";
-import { loginUser } from "../api/handlers/userLogin";
+import { loginUser } from "../api/handlers/handleUserLogin";
 import { parseString, stringifyObject } from "../jsonHelper";
 import { useRouter } from "next/navigation";
 import { getToken, setInvUser, setToken } from "../helper/token";

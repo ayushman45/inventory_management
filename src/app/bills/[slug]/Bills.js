@@ -7,6 +7,7 @@ import {
 } from "@/app/api/handlers/handleBills";
 import {
   createPayment,
+  deletePayment,
   getPaymentsByBillId,
 } from "@/app/api/handlers/handlePayments";
 import { getPurchase } from "@/app/api/handlers/handlePurchases";
@@ -92,6 +93,19 @@ function Page() {
     setBillServices(servArr);
   };
 
+  const handleDeletePayment = async(paymentId) => {
+    let res = await deletePayment(stringifyObject({paymentId,type:"customer"}));
+    res = parseString(res);
+    console.log(res,"done");
+    if (res.status === 200) {
+      message.success("Payment deleted successfully",3);
+      window.location.reload();
+    } else {
+      message.error("Failed to delete payment",3);
+    }
+
+  }
+
   const handleBillProductDelete = async (index) => {
     let purchaseId = billProducts[index]._id;
     let res = await deletePurchase(
@@ -128,6 +142,20 @@ function Page() {
     res = parseString(res);
     if (res.status === 200) {
       message.success("Product updated successfully");
+      getTotalAmount();
+    } else {
+      message.error("Failed to update product");
+    }
+  };
+
+  const handleSaveService = async (index) => {
+    let service = billServices[index];
+    let res = await updatePurchase(
+      stringifyObject({ purchase: service, type: "customer" })
+    );
+    res = parseString(res);
+    if (res.status === 200) {
+      message.success("Service updated successfully");
       getTotalAmount();
     } else {
       message.error("Failed to update product");
@@ -332,6 +360,19 @@ function Page() {
                 title: "Payment Type",
                 dataIndex: "paymentType",
                 key: "paymentType",
+              },
+              {
+                title: "Action",
+                key: "payment",
+                render: (payment) => (
+                  <Button
+                    type="primary"
+                    danger
+                    onClick={() => handleDeletePayment(payment._id)}
+                  >
+                    Delete
+                  </Button>
+                ),
               },
             ]}
             dataSource={payments}

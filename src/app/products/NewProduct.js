@@ -4,7 +4,7 @@ import { Button, DatePicker, Form, Input, message } from "antd";
 import React, { useRef, useState } from "react";
 import { getInvUser, getToken } from "../helper/token";
 import { getLocaleDate } from "../helper/date";
-import { createOrUpdateProduct } from "../api/handlers/productHandler";
+import { createOrUpdateProduct } from "../api/handlers/handleProducts";
 import { parseString, stringifyObject } from "../jsonHelper";
 
 function NewProduct({ onClose }) {

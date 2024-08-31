@@ -1,7 +1,7 @@
 "use client"
 
-import { getAllProducts } from "../api/handlers/productHandler"
-import { getAllServices } from "../api/handlers/serviceHandler";
+import { getAllProducts } from "../api/handlers/handleProducts"
+import { getAllServices } from "../api/handlers/handleServices";
 import { parseString, stringifyObject } from "../jsonHelper"
 
 export const getProductsForUser = async(user)=>{
