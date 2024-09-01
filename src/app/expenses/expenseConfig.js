@@ -87,6 +87,10 @@ export const expenseTypeArray = [
         value: "labour",
       },
       {
+        label: "Medical Bills",
+        value: "medical",
+      },
+      {
         label: "Miscellaneous",
         value: "misc",
       },

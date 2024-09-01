@@ -1,6 +1,8 @@
+"use client"
+
 import { Button } from 'antd';
 import { useRouter } from 'next/navigation'
-import React from 'react'
+import React, { useEffect, useLayoutEffect } from 'react'
 import { removeInvUser, removeToken } from '../helper/token';
 
 function Header() {
@@ -10,8 +12,12 @@ function Header() {
         removeInvUser();
         removeToken();
         navigate.push("/",{replace: true});
-        
+
     }
+
+    useEffect(()=>{
+        console.log(window.location.href.split('/'))
+    },[])
 
   return (
     <div className='row-flex wid-100 sp-between'>

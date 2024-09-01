@@ -215,7 +215,7 @@ function ExpenseAnalytics() {
   useEffect(() => {
     // Fetch data based on selected mode, start date, and end date
     getAnalyticsHelper();
-  }, [startDate, endDate]);
+  }, [mode,startDate, endDate]);
 
   return (
     <div className="expense-analytics-container">
