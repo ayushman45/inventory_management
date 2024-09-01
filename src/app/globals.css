@@ -86,3 +86,24 @@ body{
         min-width: 205px;
     }
 }
+
+#cash-in{
+    padding: 7px 14px;
+    background: linear-gradient(315deg, hsla(152, 100%, 50%, 1) 0%, hsla(0, 0%, 100%, 1) 120%);
+    min-height: 100px;
+    border-radius: 4px;
+    box-shadow: 0 0 3px 1px rgb(212, 212, 212);
+}
+
+#cash-out{
+    padding: 7px 14px;
+    background: linear-gradient(315deg, rgb(255, 0, 0) 0%, hsla(0, 0%, 100%, 1) 120%);
+    min-height: 100px;
+    border-radius: 4px;
+    box-shadow: 0 0 3px 1px rgb(212, 212, 212);
+}
+
+.amount-p{
+    text-align: center;
+    font-size: 18px;
+}

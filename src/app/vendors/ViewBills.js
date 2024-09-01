@@ -9,36 +9,35 @@ import {
 } from "../api/handlers/handleBills";
 import { parseString, stringifyObject } from "../jsonHelper";
 import { message, Table } from "antd";
+import { getISODateString } from "../helper/date";
 
 function ViewBills() {
   const { slug } = useParams();
   const user = getUser();
   const [bills, setBills] = useState(null);
   const navigate = useRouter();
-  const [products, setProducts] = useState(null);
+  const [products, setProducts] = useState({});
 
-  const setProductsForBill = () => {
+  const setProductsForBill = async() => {
     if(!bills){
       return;
     }
-    
-    bills.forEach(async (bill) => {
+
+    for(let i=0; i<bills.length; i++) {
       let productsForBill = await getBillProducts(
-        stringifyObject({ purchases: bill.purchases, type: "vendor" })
+        stringifyObject({ purchases: bills[i].purchases, type: "vendor" })
       );
       productsForBill = parseString(productsForBill);
       console.log(productsForBill,"done")
       if (productsForBill.status === 200) {
-        let temp = products ? { ...products } : {};
-        temp[bill._id] = productsForBill.data;
-        console.log(temp,productsForBill.data);
-        setProducts(temp);
-
+        setProducts(prev=>{
+          return {...prev, [bills[i]._id]: productsForBill.data };
+        });
       } else {
         message.warning("No products found for this bill");
-
       }
-    });
+    }
+    
   };
 
   useEffect(() => {
@@ -60,8 +59,7 @@ function ViewBills() {
     }
   };
 
-  const columns = useMemo(
-    () => [
+  const columns =  [
       {
         title: "Bill Id",
         dataIndex: "_id",
@@ -80,10 +78,9 @@ function ViewBills() {
         title: "Date",
         dataIndex: "date",
         key: "date",
+        render: (date)=>getISODateString(date)
       },
-    ],
-    [products]
-  );
+    ];
 
   useEffect(() => {
     if(!slug || !user){

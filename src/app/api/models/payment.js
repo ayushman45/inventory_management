@@ -20,7 +20,11 @@ const paymentSchema = new mongoose.Schema({
     date:{
         type: Date,
         default: Date.now,
-    }
+    },
+    user:{
+        type: String,
+        required: true,
+    },
 });
 
 export const Payment = mongoose.models?.Payment || mongoose.model('Payment',paymentSchema);

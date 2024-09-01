@@ -11,6 +11,8 @@ import {
 } from "@/app/api/handlers/handlePayments";
 import { getPurchase } from "@/app/api/handlers/handlePurchases";
 import { getVendorForBill } from "@/app/api/handlers/handleVendorPurchase";
+import { convertAmountAddCommas } from "@/app/helper/amount";
+import { getISODateString } from "@/app/helper/date";
 import { getUser } from "@/app/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { Button, DatePicker, Input, message, Select, Table } from "antd";
@@ -40,7 +42,7 @@ function Page() {
       date: payingDate,
     };
 
-    let res = await createPayment(stringifyObject({ payment, type: "vendor" }));
+    let res = await createPayment(stringifyObject({ payment, type: "vendor",user }));
     res = parseString(res);
     if (res.status === 200) {
       message.success("Payment made successfully");
@@ -49,6 +51,19 @@ function Page() {
       message.error("Failed to make payment");
     }
   };
+
+  const handleDeletePayment = async(paymentId) => {
+    let res = await deletePayment(stringifyObject({paymentId,type:"vendor"}));
+    res = parseString(res);
+    console.log(res,"done");
+    if (res.status === 200) {
+      message.success("Payment deleted successfully",3);
+      window.location.reload();
+    } else {
+      message.error("Failed to delete payment",3);
+    }
+
+  }
 
   const getTotalAmount = async () => {
     if (!bill || !bill.purchases || bill.purchases.length === 0) {
@@ -186,10 +201,10 @@ function Page() {
   return (
     <div>
       {bill && <h1>Vendor Bill #{bill._id}</h1>}
-      <p>Date: {bill?.date}</p>
-      <p>Total Amount: {totalAmount}</p>
+      <p>Date: {bill&& getISODateString(bill.date)}</p>
+      <p>Total Amount: {convertAmountAddCommas(totalAmount)}</p>
 
-      <p>Total Paid : {totalPaid}</p>
+      <p>Total Paid : {convertAmountAddCommas(totalPaid)}</p>
       <br />
       <br />
       {Object.keys(billProducts).map((index) => (
@@ -251,12 +266,25 @@ function Page() {
           <h2>All Payments</h2>
           <Table
             columns={[
-              { title: "Date", dataIndex: "date", key: "date" },
+              { title: "Date", dataIndex: "date", key: "date", render: (date)=>getISODateString(date) },
               { title: "Amount", dataIndex: "amount", key: "amount" },
               {
                 title: "Payment Type",
                 dataIndex: "paymentType",
                 key: "paymentType",
+              },
+              {
+                title: "Delete",
+                key: "payment",
+                render: (payment) => (
+                  <Button
+                    type="primary"
+                    danger
+                    onClick={() => handleDeletePayment(payment._id)}
+                  >
+                    Delete
+                  </Button>
+                ),
               },
             ]}
             dataSource={payments}

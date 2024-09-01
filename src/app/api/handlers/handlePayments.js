@@ -41,14 +41,14 @@ export async function createPayment(req){
     try{
         await connectDB();
         console.log(req,"is the request");
-        let { payment, type } = JSON.parse(req);
+        let { payment, type,user } = JSON.parse(req);
         console.log(payment,type,"is the payment");
         let newPayment;
         if(type==='vendor'){
-            newPayment = new VendorDebit(payment);
+            newPayment = new VendorDebit({...payment,user});
         }
         else{
-            newPayment = new Payment(payment);
+            newPayment = new Payment({...payment,user});
         }
         await newPayment.save();
         return send({status:status.SUCCESS, data:newPayment});

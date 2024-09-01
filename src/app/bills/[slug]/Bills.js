@@ -12,6 +12,7 @@ import {
 } from "@/app/api/handlers/handlePayments";
 import { getPurchase } from "@/app/api/handlers/handlePurchases";
 import { getCustomerForBill, getVendorForBill } from "@/app/api/handlers/handleVendorPurchase";
+import { convertAmountAddCommas } from "@/app/helper/amount";
 import { getISODateString } from "@/app/helper/date";
 import { getUser } from "@/app/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
@@ -48,7 +49,7 @@ function Page() {
       date: payingDate,
     };
 
-    let res = await createPayment(stringifyObject({ payment, type: "customer" }));
+    let res = await createPayment(stringifyObject({ payment, type: "customer",user }));
     res = parseString(res);
     if (res.status === 200) {
       message.success("Payment made successfully");
@@ -246,10 +247,10 @@ function Page() {
   return (
     <div>
       {bill && <h1>Customer Bill #{bill._id}</h1>}
-      <p>Date: {bill?.date}</p>
-      <p>Total Amount: {totalAmount}</p>
+      <p>Date: {bill&& getISODateString(bill.date)}</p>
+      <p>Total Amount: {convertAmountAddCommas(totalAmount)}</p>
 
-      <p>Total Paid : {totalPaid}</p>
+      <p>Total Paid : {convertAmountAddCommas(totalPaid)}</p>
       <br />
       <br />
       {Object.keys(billProducts).map((index) => (
@@ -362,7 +363,7 @@ function Page() {
                 key: "paymentType",
               },
               {
-                title: "Action",
+                title: "Delete",
                 key: "payment",
                 render: (payment) => (
                   <Button

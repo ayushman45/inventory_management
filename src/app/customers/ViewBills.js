@@ -10,6 +10,7 @@ import {
 } from "../api/handlers/handleBills";
 import { parseString, stringifyObject } from "../jsonHelper";
 import { message, Table } from "antd";
+import { getISODateString } from "../helper/date";
 
 function ViewBills() {
   const { slug } = useParams();
@@ -18,27 +19,25 @@ function ViewBills() {
   const navigate = useRouter();
   const [products, setProducts] = useState(null);
 
-  const setProductsForBill = () => {
+  const setProductsForBill = async() => {
     if(!bills){
       return;
     }
-    
-    bills.forEach(async (bill) => {
-      let productsForBill = await getBillProducts(
-        stringifyObject({ purchases: bill.purchases, type: "customer" })
-      );
-      productsForBill = parseString(productsForBill);
-      console.log(productsForBill,"done")
-      if (productsForBill.status === 200) {
-        let temp = products ? { ...products } : {};
-        temp[bill._id] = productsForBill.data;
-        setProducts(temp);
 
+    for(let i=0; i<bills.length; i++) {
+      let productsForBill = await getBillProducts(
+        stringifyObject({ purchases: bills[i].purchases, type: "customer" })
+      );
+      productsForBill = parseString(productsForBill); 
+      if (productsForBill.status === 200) {
+        setProducts(prev=>{
+          return {...prev, [bills[i]._id]: productsForBill.data };
+        });
       } else {
         message.warning("No products found for this bill");
-
       }
-    });
+    }
+    
   };
 
   useEffect(() => {
@@ -79,6 +78,7 @@ function ViewBills() {
         title: "Date",
         dataIndex: "date",
         key: "date",
+        render: (date)=>getISODateString(date)
       },
     ],
     [products]

@@ -24,6 +24,10 @@ const vendorDebitSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    user:{
+        type: String,
+        required: true,
+    }
 
 });
 
