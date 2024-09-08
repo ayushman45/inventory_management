@@ -1,9 +1,13 @@
-import React from 'react'
-
+import React from "react";
+import Header from "@/app/Components/Header";
 function NotFound() {
   return (
-    <div>NotFound</div>
-  )
+    <div>
+      <Header />
+      <br />
+      NotFound
+    </div>
+  );
 }
 
-export default NotFound
+export default NotFound;

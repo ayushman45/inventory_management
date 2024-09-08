@@ -54,8 +54,6 @@ function ViewBills() {
     console.log(res);
     if (res.status === 200) {
       setBills(res.data);
-    } else {
-      message.warning("No bills");
     }
   };
 

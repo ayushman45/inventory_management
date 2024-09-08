@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { message, Tabs, Typography } from "antd";
 import { getLocaleDate } from "@/app/helper/date";
+import Header from "@/app/Components/Header";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -69,7 +70,13 @@ function EditProduct({ product, getProductForUser }) {
 
 function Product() {
   const { slug } = useParams();
-  const user = getUser();
+  const [user,setUser] = useState(null);
+  
+  useEffect(() => {
+    setUser(getUser());
+
+  }, []);
+
   const [product, setProduct] = useState(null);
   const [tabItems, setTabItems] = useState(null);
 
@@ -134,6 +141,8 @@ function Product() {
   }, [slug, user]);
   return (
     <div>
+      <Header />
+      <br />
       {product && (
         <Tabs defaultActiveKey="1" items={tabItems} onChange={onChange} />
       )}

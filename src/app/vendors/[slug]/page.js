@@ -5,12 +5,14 @@ import {
 } from "@/app/api/handlers/handleVendors";
 import { getUser } from "@/app/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { message, Tabs, Typography } from "antd";
+import { Button, message, Tabs, Typography } from "antd";
 import { getLocaleDate } from "@/app/helper/date";
 import AddVendorPurchase from "../AddVendorPurchase";
 import ViewBills from "../ViewBills";
+import Header from "@/app/Components/Header";
+import axios from "axios";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -37,7 +39,6 @@ function EditVendor({ vendor, getVendorForUser }) {
       pincode,
     };
 
-    console.log(updatedVendor);
     let res = await createOrUpdateVendor(
       stringifyObject({ ...updatedVendor })
     );
@@ -105,9 +106,8 @@ function Vendor() {
   const { slug } = useParams();
   const user = getUser();
   const [vendor, setVendor] = useState(null);
-  const [vendorData, setVendorData] = useState(null);
-  const [formData, setFormData] = useState(null);
   const [tabItems, setTabItems] = useState(null);
+  const navigate = useRouter();
 
   const getVendorForUser = async () => {
     let res = await getVendor(stringifyObject({ user, id: slug }));
@@ -117,6 +117,15 @@ function Vendor() {
       setVendor(data);
     }
   };
+
+  const handleDeleteVendor = async () => {
+    let res = await axios.get(`/api/deleteVendor?vendorId=${slug}`);
+    if(res.status===200){
+      message.success("Vendor Deleted Successfully");
+      navigate.push("/vendors");
+    }
+
+  }
 
   const onChange = (key) => {
     console.log(key);
@@ -165,7 +174,9 @@ function Vendor() {
       {
         key: "3",
         label: "Delete",
-        children: <div>Delete Vendor</div>,
+        children: <div>
+          <Button type="primary" danger onClick={handleDeleteVendor}>Delete Vendor</Button>
+        </div>,
       },
       {
         key: "4",
@@ -180,8 +191,6 @@ function Vendor() {
     ];
 
     setTabItems(items);
-
-    setVendorData(jsx);
   }, [vendor]);
 
   useEffect(() => {
@@ -193,6 +202,8 @@ function Vendor() {
   }, [slug, user]);
   return (
     <div>
+      <Header />
+      <br />
       {vendor && (
         <Tabs defaultActiveKey="1" items={tabItems} onChange={onChange} />
       )}

@@ -2,12 +2,23 @@
 
 import { Button } from 'antd';
 import { useRouter } from 'next/navigation'
-import React, { useEffect, useLayoutEffect } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { removeInvUser, removeToken } from '../helper/token';
 
 function Header() {
-    const navigate = useRouter();
+    const [flag, setFlag] = useState(null);
 
+    useEffect(()=>{
+        let arr = window.location.pathname.split('/');
+        if(arr[arr.length-1] === 'login'){
+            setFlag(false);
+        }
+        else{
+            setFlag(true);
+        }
+
+    },[])
+    const navigate = useRouter();
     const handleLogout = () => {
         removeInvUser();
         removeToken();
@@ -15,14 +26,11 @@ function Header() {
 
     }
 
-    useEffect(()=>{
-        console.log(window.location.href.split('/'))
-    },[])
 
   return (
     <div className='row-flex wid-100 sp-between'>
         <Button onClick={() => navigate.push('/dashboard')}>Dashboard</Button>
-        <Button type='primary' danger onClick={handleLogout}>Logout</Button>
+        {flag && <Button type='primary' danger onClick={handleLogout}>Logout</Button>}
 
     </div>
   )

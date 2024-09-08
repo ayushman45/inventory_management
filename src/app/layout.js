@@ -1,5 +1,3 @@
-"use client"
-
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./Components/Header";
@@ -15,8 +13,6 @@ export default function RootLayout({ children }) {
         <title>Inventory Management</title>
       </head>
       <body className={inter.className}>
-        <Header />
-        <br />
         {children}
       </body>
     </html>

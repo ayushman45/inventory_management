@@ -90,6 +90,7 @@ export async function getVendor(req){
         return send({ status: status.SUCCESS, data: temp });
       }
     } catch (err) {
+      console.log(err.message);
       return send({
         status: status.INTERNAL_SERVER_ERROR,
         message: err.message,

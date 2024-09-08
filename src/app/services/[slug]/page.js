@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { message, Tabs, Typography } from "antd";
 import { getLocaleDate } from "@/app/helper/date";
+import Header from "@/app/Components/Header";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -134,6 +135,8 @@ function Service() {
   }, [slug, user]);
   return (
     <div>
+      <Header />
+      <br />
       {service && (
         <Tabs defaultActiveKey="1" items={tabItems} onChange={onChange} />
       )}

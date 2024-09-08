@@ -14,7 +14,6 @@ const vendorSchema = new mongoose.Schema({
     },
     address:{
         type:String,
-        required:true
     },
     city:{
         type:String,
@@ -22,11 +21,9 @@ const vendorSchema = new mongoose.Schema({
     },
     state:{
         type:String,
-        required:true
     },
     pincode:{
         type:String,
-        required:true
     },
     accountNumber:{
         type:String,

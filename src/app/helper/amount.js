@@ -1,9 +1,9 @@
 export const convertAmount = (amount) => {
     if(amount >= 100000){
-        return `${amount/100000}L`;
+        return `${(amount/100000).toFixed(2)}L`;
     }
     else if(amount >= 1000){
-        return `${amount/1000}K`;
+        return `${(amount/1000).toFixed(2)}K`;
     }
     else{
         return amount;

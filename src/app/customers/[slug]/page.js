@@ -7,11 +7,11 @@ import { getUser } from "@/app/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Button, message, Tabs, Typography } from "antd";
+import { message, Tabs, Typography } from "antd";
 import { getLocaleDate } from "@/app/helper/date";
 import AddCustomerPurchase from "../AddCustomerPurchase";
-import ModalHelper from "@/app/Components/ModalHelper";
 import ViewBills from "../ViewBills";
+import Header from "@/app/Components/Header";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -51,6 +51,8 @@ function EditCustomer({ customer, getCustomerForUser }) {
 
   return (
     <div className="form">
+      <Header />
+      <br />
       <form onSubmit={handleSubmit}>
         <label>Customer Name</label>
         <input
@@ -96,7 +98,12 @@ function EditCustomer({ customer, getCustomerForUser }) {
 
 function Customer() {
   const { slug } = useParams();
-  const user = getUser();
+  const [user,setUser] = useState(null);
+  useEffect(() => {
+    setUser(getUser());
+
+  }, []);
+  
   const [customer, setCustomer] = useState(null);
   const [tabItems, setTabItems] = useState(null);
 

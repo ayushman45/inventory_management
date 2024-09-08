@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "antd": "^5.20.0",
+    "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "dayjs": "^1.11.13",
     "mongoose": "^8.5.2",

@@ -53,8 +53,6 @@ function ViewBills() {
     res = parseString(res);
     if (res.status === 200) {
       setBills(res.data);
-    } else {
-      message.warning("No bills");
     }
   };
 

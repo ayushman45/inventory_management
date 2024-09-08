@@ -18,7 +18,7 @@ function NewVendor({ onClose }) {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    let name = nameRef.current.input.value;
+    let vendorName = nameRef.current.input.value;
     let email = emailRef.current.input.value;
     let phone = phoneRef.current.input.value;
     let state = stateRef.current.input.value;
@@ -26,7 +26,7 @@ function NewVendor({ onClose }) {
     let address = addressRef.current.input.value;
     let city = cityRef.current.input.value;
     let user = await getInvUser().username;
-    let resp = await createOrUpdateVendor(stringifyObject({ name, email, phone, state, pincode, address, city, user }));
+    let resp = await createOrUpdateVendor(stringifyObject({ vendorName, email, phone, state, pincode, address, city, user }));
     let res = parseString(resp);
     if (res.status === 200) {
       message.success("Vendor Created Successfully");

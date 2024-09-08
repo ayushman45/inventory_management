@@ -97,13 +97,10 @@ function ExpenseAnalytics() {
   const [user, setUser] = useState(null);
 
   const setDates = ({value, dateString,dateArr, type}) => {
-    console.log(value, dateString, dateArr, type,mode);
     if (type === "single") {
         if(mode==="monthly"){
             setStartDate(dayjs(dateString).startOf("month").toISOString());
             setEndDate(dayjs(dateString).endOf("month").toISOString());
-            console.log(dayjs(dateString).startOf("month").toISOString())
-            console.log(dayjs(dateString).endOf("month").toISOString())
         }
         else if(mode==="yearly"){
             setStartDate(dayjs(dateString).startOf("year").toISOString());
@@ -161,6 +158,8 @@ function ExpenseAnalytics() {
       return;
     }
 
+    console.log("loading analytics")
+
     let res = await getAnalytics(stringifyObject({ startDate, endDate, user }));
     res = parseString(res);
     console.log(res);
@@ -178,10 +177,6 @@ function ExpenseAnalytics() {
   }, []);
 
   useEffect(() => {
-    if(startDate && endDate) {
-        return;
-    }
-
     switch (mode) {
       case "daily":
         setStartDate(dayjs().startOf("day").toISOString());
