@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "@/app/Components/Header";
+import Header from "@/Components/Header";
 function NotFound() {
   return (
     <div>

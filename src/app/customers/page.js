@@ -2,16 +2,16 @@
 
 import { Button, message, Table } from "antd";
 import React, { useEffect, useState } from "react";
-import ModalHelper from "../Components/ModalHelper";
+import ModalHelper from "../../Components/ModalHelper";
 import NewCustomer from "./NewCustomer";
-import { getCustomersForUser } from "../helper/getCustomers";
-import { getUser } from "../helper/token";
+import { getCustomersForUser } from "../../helper/getCustomers";
+import { getUser } from "../../helper/token";
 import { importCustomersFromCSV } from "../api/handlers/handleCustomers";
 import { parseString, stringifyObject } from "../jsonHelper";
 import Papa from "papaparse";
-import Searchbar from "../Components/Searchbar";
+import Searchbar from "../../Components/Searchbar";
 import { useRouter } from "next/navigation";
-import Header from "@/app/Components/Header";
+import Header from "@/Components/Header";
 function Customers() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [customers, setCustomers] = useState(null);

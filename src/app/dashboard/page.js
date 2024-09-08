@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { getToken, getUser } from "../helper/token";
+import { getToken, getUser } from "../../helper/token";
 import { useRouter } from "next/navigation";
 import { Button } from "antd";
-import ExpenseAnalytics from "../Components/ExpenseAnalytics";
-import Header from "@/app/Components/Header";
+import ExpenseAnalytics from "../../Components/ExpenseAnalytics";
+import Header from "@/Components/Header";
 
 function Dashboard() {
   const navigate = useRouter();

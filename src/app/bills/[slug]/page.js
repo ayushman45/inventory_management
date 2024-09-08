@@ -12,10 +12,10 @@ import {
 } from "@/app/api/handlers/handlePayments";
 import { getPurchase } from "@/app/api/handlers/handlePurchases";
 import { getCustomerForBill, getVendorForBill } from "@/app/api/handlers/handleVendorPurchase";
-import Header from "@/app/Components/Header";
-import { convertAmountAddCommas } from "@/app/helper/amount";
-import { getISODateString } from "@/app/helper/date";
-import { getUser } from "@/app/helper/token";
+import Header from "@/Components/Header";
+import { convertAmountAddCommas } from "@/helper/amount";
+import { getISODateString } from "@/helper/date";
+import { getUser } from "@/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { Button, DatePicker, Input, message, Select, Table } from "antd";
 import { useParams } from "next/navigation";

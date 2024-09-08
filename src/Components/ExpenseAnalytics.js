@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { DatePicker, Select } from "antd";
-import { getAnalytics } from "../api/handlers/handleAnalytics";
-import { stringifyObject,parseString } from "../jsonHelper";
+import { getAnalytics } from "../app/api/handlers/handleAnalytics";
+import { stringifyObject,parseString } from "../app/jsonHelper";
 import { getUser } from "../helper/token";
 import { convertAmount } from "../helper/amount";
 const { RangePicker } = DatePicker;

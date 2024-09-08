@@ -3,13 +3,14 @@ import {
   createOrUpdateProduct,
   getProduct,
 } from "@/app/api/handlers/handleProducts";
-import { getUser } from "@/app/helper/token";
+import { getUser } from "@/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { message, Tabs, Typography } from "antd";
-import { getLocaleDate } from "@/app/helper/date";
-import Header from "@/app/Components/Header";
+import { Button, message, Tabs, Typography } from "antd";
+import { getLocaleDate } from "@/helper/date";
+import Header from "@/Components/Header";
+import axios from "axios";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -71,7 +72,7 @@ function EditProduct({ product, getProductForUser }) {
 function Product() {
   const { slug } = useParams();
   const [user,setUser] = useState(null);
-  
+
   useEffect(() => {
     setUser(getUser());
 
@@ -79,6 +80,7 @@ function Product() {
 
   const [product, setProduct] = useState(null);
   const [tabItems, setTabItems] = useState(null);
+  const navigate = useRouter();
 
   const getProductForUser = async () => {
     let res = await getProduct(stringifyObject({ user, id: slug }));
@@ -88,6 +90,15 @@ function Product() {
       setProduct(data);
     }
   };
+
+  const handleDeleteProduct = async () => {
+    let res = await axios.get(`/api/products/delete/${slug}`);
+    if(res.status === 200){
+      message.success("Product Deleted Successfully");
+      navigate.push("/products");
+    }
+
+  }
 
   const onChange = (key) => {
     console.log(key);
@@ -124,7 +135,9 @@ function Product() {
       {
         key: "3",
         label: "Delete",
-        children: <div>Delete Product</div>,
+        children: <div>
+        <Button type="primary" danger onClick={handleDeleteProduct}>Delete Product</Button>
+      </div>,
       },
     ];
 

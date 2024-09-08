@@ -1,7 +1,7 @@
 "use client"
 
-import { getAllServices } from "../api/handlers/handleServices"
-import { parseString, stringifyObject } from "../jsonHelper"
+import { getAllServices } from "../app/api/handlers/handleServices"
+import { parseString, stringifyObject } from "../app/jsonHelper"
 
 export const getServicesForUser = async(user)=>{
     let resp = await getAllServices(stringifyObject({user}));

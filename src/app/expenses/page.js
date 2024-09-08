@@ -7,10 +7,10 @@ import {
   getExpensesForUser,
 } from "../api/handlers/handleExpenses";
 import { parseString, stringifyObject } from "../jsonHelper";
-import { getUser } from "../helper/token";
+import { getUser } from "../../helper/token";
 import { Button, DatePicker, Input, message, Select, Table } from "antd";
 import { expenseDescriptionMap, expenseTypeArray } from "./expenseConfig";
-import Header from "@/app/Components/Header";
+import Header from "@/Components/Header";
 
 function Expense() {
   const [user, setUser] = useState(null);

@@ -2,16 +2,16 @@
 
 import { Button, message, Table } from "antd";
 import React, { useEffect, useState } from "react";
-import ModalHelper from "../Components/ModalHelper";
+import ModalHelper from "../../Components/ModalHelper";
 import NewProduct from "./NewProduct";
-import { getProductsForUser } from "../helper/getProducts";
-import { getUser } from "../helper/token";
+import { getProductsForUser } from "../../helper/getProducts";
+import { getUser } from "../../helper/token";
 import { importProductsFromCSV } from "../api/handlers/handleProducts";
 import { parseString, stringifyObject } from "../jsonHelper";
 import Papa from "papaparse";
-import Searchbar from "../Components/Searchbar";
+import Searchbar from "../../Components/Searchbar";
 import { useRouter } from "next/navigation";
-import Header from "@/app/Components/Header";
+import Header from "@/Components/Header";
 
 function Products() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,7 +22,7 @@ function Products() {
     setUser(getUser());
 
   }, []);
-  
+
   const navigate = useRouter();
 
   const fetchProducts = async () => {

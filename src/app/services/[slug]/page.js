@@ -3,13 +3,14 @@ import {
   createOrUpdateService,
   getService,
 } from "@/app/api/handlers/handleServices";
-import { getUser } from "@/app/helper/token";
+import { getUser } from "@/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { message, Tabs, Typography } from "antd";
-import { getLocaleDate } from "@/app/helper/date";
-import Header from "@/app/Components/Header";
+import { Button, message, Tabs, Typography } from "antd";
+import { getLocaleDate } from "@/helper/date";
+import Header from "@/Components/Header";
+import axios from "axios";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -73,6 +74,17 @@ function Service() {
   const user = getUser();
   const [service, setService] = useState(null);
   const [tabItems, setTabItems] = useState(null);
+  const navigate = useRouter();
+
+  const handleDeleteService = async () => {
+    let res = await axios.get(`/api/services/delete/${slug}`);
+    if(res.status===200){
+      message.success("Service deleted successfully");
+      navigate.push("/services");
+      
+    }
+  
+  }
 
   const getServiceForUser = async () => {
     let res = await getService(stringifyObject({ user, id: slug }));
@@ -118,7 +130,9 @@ function Service() {
       {
         key: "3",
         label: "Delete",
-        children: <div>Delete Service</div>,
+        children: <div>
+          <Button type="primary" danger onClick={handleDeleteService}>Delete Service</Button>
+        </div>,
       },
     ];
 

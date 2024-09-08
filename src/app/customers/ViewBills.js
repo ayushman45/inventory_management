@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
-import { getUser } from "../helper/token";
+import { getUser } from "../../helper/token";
 import {
   getBillProducts,
   getBillsForCustomer,
@@ -10,7 +10,7 @@ import {
 } from "../api/handlers/handleBills";
 import { parseString, stringifyObject } from "../jsonHelper";
 import { message, Table } from "antd";
-import { getISODateString } from "../helper/date";
+import { getISODateString } from "../../helper/date";
 
 function ViewBills() {
   const { slug } = useParams();

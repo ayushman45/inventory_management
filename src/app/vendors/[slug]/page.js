@@ -3,15 +3,15 @@ import {
   createOrUpdateVendor,
   getVendor,
 } from "@/app/api/handlers/handleVendors";
-import { getUser } from "@/app/helper/token";
+import { getUser } from "@/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Button, message, Tabs, Typography } from "antd";
-import { getLocaleDate } from "@/app/helper/date";
+import { getLocaleDate } from "@/helper/date";
 import AddVendorPurchase from "../AddVendorPurchase";
 import ViewBills from "../ViewBills";
-import Header from "@/app/Components/Header";
+import Header from "@/Components/Header";
 import axios from "axios";
 
 const { Title, Paragraph, Text } = Typography;
@@ -119,7 +119,7 @@ function Vendor() {
   };
 
   const handleDeleteVendor = async () => {
-    let res = await axios.get(`/api/deleteVendor?vendorId=${slug}`);
+    let res = await axios.get(`/api/vendors/delete/${slug}`);
     if(res.status===200){
       message.success("Vendor Deleted Successfully");
       navigate.push("/vendors");

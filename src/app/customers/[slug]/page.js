@@ -3,15 +3,16 @@ import {
   createOrUpdateCustomer,
   getCustomer,
 } from "@/app/api/handlers/handleCustomers";
-import { getUser } from "@/app/helper/token";
+import { getUser } from "@/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { message, Tabs, Typography } from "antd";
-import { getLocaleDate } from "@/app/helper/date";
+import { Button, message, Tabs, Typography } from "antd";
+import { getLocaleDate } from "@/helper/date";
 import AddCustomerPurchase from "../AddCustomerPurchase";
 import ViewBills from "../ViewBills";
-import Header from "@/app/Components/Header";
+import Header from "@/Components/Header";
+import axios from "axios";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -99,11 +100,12 @@ function EditCustomer({ customer, getCustomerForUser }) {
 function Customer() {
   const { slug } = useParams();
   const [user,setUser] = useState(null);
+  const navigate = useRouter();
   useEffect(() => {
     setUser(getUser());
 
   }, []);
-  
+
   const [customer, setCustomer] = useState(null);
   const [tabItems, setTabItems] = useState(null);
 
@@ -115,6 +117,15 @@ function Customer() {
       setCustomer(data);
     }
   };
+
+  const handleDeleteCustomer = async () => {
+    let res = await axios.get(`/api/customers/delete/${slug}`);
+    if(res.status === 200){
+      message.success("Customer Deleted Successfully");
+      navigate.push("/customers");
+    }
+  
+  }
 
   const onChange = (key) => {
     console.log(key);
@@ -165,7 +176,9 @@ function Customer() {
       {
         key: "3",
         label: "Delete",
-        children: <div>Delete Customer</div>,
+        children: <div>
+          <Button type="primary" danger onClick={handleDeleteCustomer}>Delete Customer</Button>
+        </div>,
       },
       {
         key: "4",

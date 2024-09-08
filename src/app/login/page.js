@@ -4,7 +4,7 @@ import { Button, Form, Input, message } from "antd";
 import { loginUser } from "../api/handlers/handleUserLogin";
 import { parseString, stringifyObject } from "../jsonHelper";
 import { useRouter } from "next/navigation";
-import { getToken, setInvUser, setToken } from "../helper/token";
+import { getToken, setInvUser, setToken } from "../../helper/token";
 
 function Login() {
   const navigate = useRouter();

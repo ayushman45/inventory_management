@@ -2,16 +2,16 @@
 
 import { Button, message, Table } from "antd";
 import React, { useEffect, useState } from "react";
-import ModalHelper from "../Components/ModalHelper";
+import ModalHelper from "../../Components/ModalHelper";
 import NewVendor from "./NewVendor";
-import { getVendorsForUser } from "../helper/getVendors";
-import { getUser } from "../helper/token";
+import { getVendorsForUser } from "../../helper/getVendors";
+import { getUser } from "../../helper/token";
 import { importVendorsFromCSV } from "../api/handlers/handleVendors";
 import { parseString, stringifyObject } from "../jsonHelper";
 import Papa from "papaparse";
-import Searchbar from "../Components/Searchbar";
+import Searchbar from "../../Components/Searchbar";
 import { useRouter } from "next/navigation";
-import Header from "@/app/Components/Header";
+import Header from "@/Components/Header";
 
 function Vendors() {
   const [isModalOpen, setIsModalOpen] = useState(false);

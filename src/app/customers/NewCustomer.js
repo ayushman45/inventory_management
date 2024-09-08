@@ -2,8 +2,8 @@
 
 import { Button, DatePicker, Form, Input, message } from "antd";
 import React, { useRef, useState } from "react";
-import { getInvUser, getToken } from "../helper/token";
-import { getLocaleDate } from "../helper/date";
+import { getInvUser, getToken } from "../../helper/token";
+import { getLocaleDate } from "../../helper/date";
 import { createOrUpdateCustomer } from "../api/handlers/handleCustomers";
 import { parseString, stringifyObject } from "../jsonHelper";
 

@@ -1,10 +1,10 @@
 "use client";
 import { useParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { getUser } from "../helper/token";
-import { getProductsForUser } from "../helper/getProducts";
+import { getUser } from "../../helper/token";
+import { getProductsForUser } from "../../helper/getProducts";
 import { Button, Input, message, Select } from "antd";
-import { getLocaleDate } from "../helper/date";
+import { getLocaleDate } from "../../helper/date";
 import { createVendorBill } from "../api/handlers/handleVendorPurchase";
 import { parseString, stringifyObject } from "../jsonHelper";
 
