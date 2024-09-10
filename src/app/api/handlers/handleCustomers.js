@@ -1,9 +1,9 @@
 "use server";
 
 import { connectDB, disconnectDB } from "../db";
-import { Customer } from "../models/customer";
+import { Customer } from "../../../backendHelpers/models/customer";
 import { send } from "./sendToFrontEnd";
-import { status } from "./status";
+import { status } from "../../../backendHelpers/status";
 
 export async function createOrUpdateCustomer(req) {
   try {

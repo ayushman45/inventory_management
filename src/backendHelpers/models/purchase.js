@@ -20,6 +20,10 @@ const purchaseSchema = new mongoose.Schema({
         enum :['service','product'],
         required: true
     },
+    discount:{
+        type: Number,
+        default: 0
+    },
     quantity:{
         type: Number,
     },

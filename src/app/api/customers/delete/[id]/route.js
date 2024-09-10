@@ -1,8 +1,8 @@
 "use server"
 
 import { connectDB, disconnectDB } from "@/app/api/db";
-import { status } from "@/app/api/handlers/status";
-import { Customer } from "@/app/api/models/customer";
+import { status } from "@/backendHelpers/status";
+import { Customer } from "@/backendHelpers/models/customer";
 
 export async function GET(request,{params}){
     try{
@@ -25,7 +25,7 @@ export async function GET(request,{params}){
     }
     
     return new Response(JSON.stringify({ message: "Customer deleted successfully" }), {
-        status: status.OK,
+        status: status.SUCCESS,
         headers: { 'Content-Type': 'application/json' },
     });
     }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Select, Input, message } from "antd";
+import { Button, Select, Input, message, DatePicker } from "antd";
 import { getUser } from "../../helper/token";
 import { getProductsForUser, getServicesForUser } from "../../helper/getProducts";
 import { useParams } from "next/navigation";
@@ -7,6 +7,7 @@ import { getISODateString, getLocaleDate } from "../../helper/date";
 import { createBill } from "../api/handlers/handleCustomerPurchase";
 import { parseString, stringifyObject } from "../jsonHelper";
 import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
 
 function AddCustomerPurchase() {
   const navigate = useRouter();
@@ -14,6 +15,7 @@ function AddCustomerPurchase() {
   const [billProducts, setBillProducts] = useState({});
   const [services, setServices] = useState([]);
   const [billServices, setBillServices] = useState({});
+  const [date,setDate]=useState(dayjs());
 
   const user = getUser();
   const { slug } = useParams();
@@ -30,10 +32,11 @@ function AddCustomerPurchase() {
         productId: billProducts[ind].productId,
         description:billProducts[ind].productName,
         purchaseType:"product",
+        discount: billProducts[ind].discount,
+        totalValue: billProducts[ind].totalValue*(1-billProducts[ind].discount/100),
         quantity: billProducts[ind].quantity,
-        totalValue: billProducts[ind].totalValue,
         user,
-        date: getLocaleDate(new Date())
+        date: new Date(date),
 
       }
       purchases.push(temp)
@@ -44,9 +47,10 @@ function AddCustomerPurchase() {
         description:billServices[ind].serviceName,
         serviceId: billServices[ind].serviceId,
         purchaseType:"service",
-        totalValue: billServices[ind].totalValue,
+        discount: billServices[ind].discount,
+        totalValue: billServices[ind].totalValue*(1-billServices[ind].discount/100),
         user,
-        date: getLocaleDate(new Date())
+        date: new Date(date)
 
       }
       purchases.push(temp)
@@ -56,7 +60,7 @@ function AddCustomerPurchase() {
   }
     let res = await createBill(stringifyObject({
       purchases,
-      date: getLocaleDate(new Date()),
+      date: new Date(date),
       customerId:slug,
       user,
     }));
@@ -162,6 +166,8 @@ function AddCustomerPurchase() {
 
   return (
     <div className="form">
+      <h3>Date</h3>
+      <DatePicker onChange={(date,dateStr)=>setDate(dayjs(new Date(dateStr)))} value={date} />
       <h3>Products Purchases</h3>
       {Object.keys(billProducts).map((index) => (
         <div key={index} className="product-component">
@@ -185,7 +191,7 @@ function AddCustomerPurchase() {
               onChange={(e) =>
                 handleInputChange(index, "quantity", e.target.value, "product")
               }
-              value={billProducts[index]?.quantity || ""}
+              value={billProducts[index]?.quantity || 0}
             />
           </label>
           <label>
@@ -201,7 +207,34 @@ function AddCustomerPurchase() {
                   "product"
                 )
               }
-              value={billProducts[index]?.totalValue || ""}
+              value={billProducts[index]?.totalValue || 0}
+            />
+          </label>
+          <label>
+            Discount(in%):
+            <Input
+              type="number"
+              min={0}
+              max={100}
+              placeholder="Enter Price"
+              onChange={(e) =>
+                handleInputChange(
+                  index,
+                  "discount",
+                  e.target.value,
+                  "product"
+                )
+              }
+              value={billProducts[index]?.discount || 0}
+            />
+          </label>
+          <label>
+            Total Value after Discount:
+            <Input
+              type="number"
+              placeholder="Enter Price"
+              value={billProducts[index]?.discount?billProducts[index]?.totalValue*(1-(billProducts[index]?.discount/100)) : billProducts[index]?.totalValue}
+              disabled
             />
           </label>
           <br />
@@ -261,6 +294,33 @@ function AddCustomerPurchase() {
                 )
               }
               value={billServices[index]?.totalValue || ""}
+            />
+          </label>
+          <label>
+            Discount(in%):
+            <Input
+              type="number"
+              min={0}
+              max={100}
+              placeholder="Enter Discount"
+              onChange={(e) =>
+                handleInputChange(
+                  index,
+                  "discount",
+                  e.target.value,
+                  "service"
+                )
+              }
+              value={billServices[index]?.discount ||0}
+            />
+          </label>
+          <label>
+            Total Value after Discount:
+            <Input
+              type="number"
+              placeholder="Enter Price"
+              value={billServices[index]?.discount?billServices[index]?.totalValue*(1-(billServices[index]?.discount/100)):billServices[index]?.totalValue}
+              disabled
             />
           </label>
           <br />

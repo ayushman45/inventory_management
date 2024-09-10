@@ -1,14 +1,14 @@
 "use server";
 
 import { connectDB, disconnectDB } from "../db";
-import { Bill } from "../models/bill";
-import { Product } from "../models/product";
-import { Purchase } from "../models/purchase";
-import { Service } from "../models/service";
-import { VendorBill } from "../models/vendorBill";
-import { VendorPurchase } from "../models/vendorPurchase";
+import { Bill } from "../../../backendHelpers/models/bill";
+import { Product } from "../../../backendHelpers/models/product";
+import { Purchase } from "../../../backendHelpers/models/purchase";
+import { Service } from "../../../backendHelpers/models/service";
+import { VendorBill } from "../../../backendHelpers/models/vendorBill";
+import { VendorPurchase } from "../../../backendHelpers/models/vendorPurchase";
 import { send } from "./sendToFrontEnd";
-import { status } from "./status";
+import { status } from "../../../backendHelpers/status";
 
 export async function getBillsForCustomer(req) {
   try {
@@ -136,7 +136,7 @@ export async function updatePurchase(req) {
 
   } finally {
     await disconnectDB();
-    
+
   }
 }
 

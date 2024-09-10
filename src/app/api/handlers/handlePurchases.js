@@ -1,10 +1,10 @@
 "use server";
 
 import { connectDB, disconnectDB } from "../db";
-import { Purchase } from "../models/purchase";
-import { VendorPurchase } from "../models/vendorPurchase";
+import { Purchase } from "../../../backendHelpers/models/purchase";
+import { VendorPurchase } from "../../../backendHelpers/models/vendorPurchase";
 import { send } from "./sendToFrontEnd";
-import { status } from "./status";
+import { status } from "../../../backendHelpers/status";
 
 export async function getPurchase(req){
     try{

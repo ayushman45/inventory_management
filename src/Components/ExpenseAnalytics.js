@@ -5,7 +5,7 @@ import { DatePicker, Select } from "antd";
 import { getAnalytics } from "../app/api/handlers/handleAnalytics";
 import { stringifyObject,parseString } from "../app/jsonHelper";
 import { getUser } from "../helper/token";
-import { convertAmount } from "../helper/amount";
+import { convertAmount, convertAmountAddCommas } from "../helper/amount";
 const { RangePicker } = DatePicker;
 
 const dayjs = require("dayjs");
@@ -214,8 +214,8 @@ function ExpenseAnalytics() {
 
   return (
     <div className="expense-analytics-container">
-      <div className="row-flex sp-between wid-50">
-        <div className="row-flex" style={{ gap: "50px" }}>
+      <div className="row-flex wid-100" style={{gap:"50px",marginBottom:"20px"}}>
+        <div className="row-flex" style={{ gap: "50px",marginLeft:"50px" }}>
           <label>
             Select Range:
             <br />
@@ -246,14 +246,14 @@ function ExpenseAnalytics() {
         </div>
       </div>
       <br />
-      <div className="row-flex sp-between wid-50">
-        <div id="cash-in" style={{ width: "43%" }}>
+      <div className="row-flex wid-100" style={{gap:"50px",justifyContent:"center"}}>
+        <div id="cash-in" style={{ width: "200px" }}>
             <p>Cash In</p>
-            <p className="amount-p">₹{convertAmount(incomeAmount)}</p>
+            <p className="amount-p">₹{convertAmountAddCommas(incomeAmount)}</p>
         </div>
-        <div id="cash-out" style={{ width: "43%" }}>
+        <div id="cash-out" style={{ width: "200px" }}>
             <p>Cash Out</p>
-            <p className="amount-p">₹{convertAmount(expenseAmount)}</p>
+            <p className="amount-p">₹{convertAmountAddCommas(expenseAmount)}</p>
         </div>
       </div>
     </div>

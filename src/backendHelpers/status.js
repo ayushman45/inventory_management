@@ -6,5 +6,7 @@ export const status={
     UNAUTHORIZED:401,
     FORBIDDEN:403,
     ERROR:400,
+    BAD_REQUEST:400,
+    OK:200,
     
 }

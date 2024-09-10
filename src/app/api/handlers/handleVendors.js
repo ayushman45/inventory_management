@@ -1,9 +1,9 @@
 "use server";
 
 import { connectDB, disconnectDB } from "../db";
-const { Vendor } = require("../models/vendor");
+const { Vendor } = require("../../../backendHelpers/models/vendor");
 import { send } from "./sendToFrontEnd";
-import { status } from "./status";
+import { status } from "../../../backendHelpers/status";
 
 export async function importVendorsFromCSV(req) {
   try {

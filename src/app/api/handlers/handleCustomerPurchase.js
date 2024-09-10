@@ -1,12 +1,12 @@
 "use server";
 
 import { connectDB, disconnectDB } from "../db";
-import { Customer } from "../models/customer";
-import { Purchase } from "../models/purchase";
-import { status } from "./status";
-import { Bill } from "../models/bill";
+import { Customer } from "../../../backendHelpers/models/customer";
+import { Purchase } from "../../../backendHelpers/models/purchase";
+import { status } from "../../../backendHelpers/status";
+import { Bill } from "../../../backendHelpers/models/bill";
 import { send } from "./sendToFrontEnd";
-import { Product } from "../models/product";
+import { Product } from "../../../backendHelpers/models/product";
 
 export async function createBill(req) {
   try {

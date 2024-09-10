@@ -1,9 +1,9 @@
 "use server"
 
 import { connectDB, disconnectDB } from "../db";
-import { Expense } from "../models/expense";
+import { Expense } from "../../../backendHelpers/models/expense";
 import { send } from "./sendToFrontEnd";
-import { status } from "./status";
+import { status } from "../../../backendHelpers/status";
 
 
 export async function createExpense(req){

@@ -1,9 +1,9 @@
 "use server"
 
 import { connectDB, disconnectDB } from "../db"
-import { Expense } from "../models/expense";
-import { Payment } from "../models/payment";
-import { VendorDebit } from "../models/vendorDebit";
+import { Expense } from "../../../backendHelpers/models/expense";
+import { Payment } from "../../../backendHelpers/models/payment";
+import { VendorDebit } from "../../../backendHelpers/models/vendorDebit";
 import { send } from "./sendToFrontEnd";
 
 export async function getAnalytics(req){

@@ -1,9 +1,9 @@
 "use server";
 
-import { compare } from "../passwordHandler/bcrypt";
-import { User } from "../models/user";
+import { compare } from "../../../backendHelpers/passwordHandler/bcrypt";
+import { User } from "../../../backendHelpers/models/user";
 import { send } from "./sendToFrontEnd";
-import { status } from "./status";
+import { status } from "../../../backendHelpers/status";
 import { connectDB, disconnectDB } from "../db";
 
 export async function loginUser(req) {

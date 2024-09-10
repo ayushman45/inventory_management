@@ -1,10 +1,10 @@
 "use server";
 
-import { encrypt } from "../passwordHandler/bcrypt";
-import { User } from "../models/user";
+import { encrypt } from "../../../backendHelpers/passwordHandler/bcrypt";
+import { User } from "../../../backendHelpers/models/user";
 import { connectDB, disconnectDB } from "../db";
 const { send } = require("./sendToFrontEnd");
-const { status } = require("./status");
+const { status } = require("../../../backendHelpers/status");
 
 export async function updateOrCreateUser(req) {
   try {

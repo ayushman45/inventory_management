@@ -2,10 +2,10 @@
 
 import { message } from "antd";
 import { send } from "./sendToFrontEnd";
-import { status } from "./status";
+import { status } from "../../../backendHelpers/status";
 import { connectDB, disconnectDB } from "../db";
-import { VendorDebit } from "../models/vendorDebit";
-import { Payment } from "../models/payment";
+import { VendorDebit } from "../../../backendHelpers/models/vendorDebit";
+import { Payment } from "../../../backendHelpers/models/payment";
 
 export async function getPaymentsByBillId(req){
     try{

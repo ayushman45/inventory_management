@@ -1,9 +1,9 @@
 "use server";
 
 import { connectDB, disconnectDB } from "../db";
-const { Product } = require("../models/product");
+const { Product } = require("../../../backendHelpers/models/product");
 import { send } from "./sendToFrontEnd";
-import { status } from "./status";
+import { status } from "../../../backendHelpers/status";
 
 export async function importProductsFromCSV(req) {
   try {

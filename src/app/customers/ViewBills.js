@@ -11,6 +11,7 @@ import {
 import { parseString, stringifyObject } from "../jsonHelper";
 import { message, Table } from "antd";
 import { getISODateString } from "../../helper/date";
+import axios from "axios";
 
 function ViewBills() {
   const { slug } = useParams();
@@ -33,8 +34,6 @@ function ViewBills() {
         setProducts(prev=>{
           return {...prev, [bills[i]._id]: productsForBill.data };
         });
-      } else {
-        message.warning("No products found for this bill");
       }
     }
     
@@ -47,12 +46,10 @@ function ViewBills() {
 
   const getBills = async () => {
     // fetch bills from server
-    let res = await getBillsForCustomer(
-      stringifyObject({ customerId: slug, user })
-    );
-    res = parseString(res);
-    if (res.status === 200) {
-      setBills(res.data);
+    let res = await axios.get(`/api/bills?&id=${slug}&user=${user}&type=customer`);
+    console.log(res)
+    if(res.data.status===200){
+        setBills(res.data.data);
     }
   };
 
@@ -87,8 +84,12 @@ function ViewBills() {
       return;
 
     }
-
-    getBills();
+    try{
+        getBills()
+    }
+    catch(err){
+        console.log(err.message)
+    }
 
   }, [slug,user]);
 

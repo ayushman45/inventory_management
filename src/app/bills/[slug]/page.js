@@ -20,6 +20,8 @@ import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { Button, DatePicker, Input, message, Select, Table } from "antd";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
+import axios from "axios";
 
 function Page() {
   const { slug } = useParams();
@@ -250,6 +252,15 @@ function Page() {
     getTotalAmount();
   }, [bill,user]);
 
+  const handleDateChange = async(dateStr) => {
+    let res = await axios.get(`/api/bills/update?&id=${bill._id}&date=${dateStr}`);
+    console.log(res);
+    if(res.status===200){
+      setBill(res.data.updatedBill)
+    }
+
+  }
+
   if (!customer || !billProducts) {
     return <div>Loading...</div>;
   }
@@ -259,10 +270,12 @@ function Page() {
       <Header />
       <br />
       {bill && <h1>Customer Bill #{bill._id}</h1>}
-      <p>Date: {bill&& getISODateString(bill.date)}</p>
-      <p>Total Amount: {convertAmountAddCommas(totalAmount)}</p>
+      <div>Date: {bill&& 
+          <DatePicker value={dayjs(bill.date || dayjs())} onChange={(date,dateStr)=>handleDateChange(dateStr)} />
+        }</div>
+      <p>Total Amount: ₹{convertAmountAddCommas(Math.round(totalAmount))}</p>
 
-      <p>Total Paid : {convertAmountAddCommas(totalPaid)}</p>
+      <p>Total Paid : ₹{convertAmountAddCommas(totalPaid)}</p>
       <br />
       <br />
       {Object.keys(billProducts).map((index) => (
@@ -291,6 +304,19 @@ function Page() {
                 handleInputChange(index, "totalValue", e.target.value, "product")
               }
               value={billProducts[index]?.totalValue || ""}
+            />
+          </label>
+          <label>
+            Discount:
+            <Input value={billProducts[index]?.discount || 0} />
+          </label>
+          <label>
+            Actual Price before discount:
+            <Input
+              type="number"
+              placeholder="Enter Price"
+              value={(billProducts[index]?.totalValue*100/(100-billProducts[index]?.discount)).toFixed(2)}
+              disabled
             />
           </label>
           <br />
@@ -334,6 +360,19 @@ function Page() {
                 handleInputChange(index, "totalValue", e.target.value, "service")
               }
               value={billServices[index]?.totalValue || ""}
+            />
+          </label>
+          <label>
+            Discount:
+            <Input value={billServices[index]?.discount || 0} />
+          </label>
+          <label>
+            Actual Price before discount:
+            <Input
+              type="number"
+              placeholder="Enter Price"
+              value={(billServices[index]?.totalValue*100/(100-billServices[index]?.discount)).toFixed(2)}
+              disabled
             />
           </label>
           <br />

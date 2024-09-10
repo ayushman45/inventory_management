@@ -1,8 +1,8 @@
 "use server"
 
 import { connectDB, disconnectDB } from "@/app/api/db";
-import { status } from "@/app/api/handlers/status";
-import { Vendor } from "@/app/api/models/vendor";
+import { status } from "@/backendHelpers/status";
+import { Vendor } from "@/backendHelpers/models/vendor";
 
 export async function GET(request,{params}){
     try{
