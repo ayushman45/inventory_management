@@ -3,16 +3,18 @@ import { useParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { getUser } from "../../helper/token";
 import { getProductsForUser } from "../../helper/getProducts";
-import { Button, Input, message, Select } from "antd";
+import { Button, DatePicker, Input, message, Select } from "antd";
 import { getLocaleDate } from "../../helper/date";
 import { createVendorBill } from "../api/handlers/handleVendorPurchase";
 import { parseString, stringifyObject } from "../jsonHelper";
+import dayjs from "dayjs";
 
 function AddVendorPurchase() {
   let { slug } = useParams();
   let user = getUser();
   const [products, setProducts] = useState([]);
   const [billProducts, setBillProducts] = useState({});
+  const [date,setDate]=useState(dayjs());
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +30,7 @@ function AddVendorPurchase() {
           quantity: billProducts[ind].quantity,
           amount: billProducts[ind].totalValue,
           user,
-          date: getLocaleDate(new Date()),
+          date: new Date(date),
         };
         console.log(temp)
         purchases.push(temp);
@@ -102,6 +104,8 @@ function AddVendorPurchase() {
 
   return (
     <div>
+      <h3>Date:</h3>
+      <DatePicker onChange={(date,dateStr)=>setDate(dayjs(new Date(dateStr)))} value={date} />
       <h3>Products Purchases</h3>
       {Object.keys(billProducts).map((index) => (
         <div key={index} className="product-component">

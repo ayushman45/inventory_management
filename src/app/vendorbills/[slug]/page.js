@@ -19,6 +19,8 @@ import { Button, DatePicker, Input, message, Select, Table } from "antd";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Header from "@/Components/Header";
+import dayjs from "dayjs";
+import axios from "axios";
 
 function Page() {
   const { slug } = useParams();
@@ -190,14 +192,30 @@ function Page() {
   }, [payments]);
 
   useEffect(() => {
+    if(!slug || !user){
+      return;
+    }
+
     getBill();
     getAllPayments();
     getVendor();
   }, [slug,user]); // Add slug as a dependency
 
   useEffect(() => {
+    if(!bill || !user){
+      return;
+    }
     getTotalAmount();
   }, [bill]);
+
+  const handleDateChange = async(dateStr) => {
+    let res = await axios.get(`/api/vendorBills/update?&id=${bill._id}&date=${dateStr}`);
+    console.log(res);
+    if(res.status===200){
+      setBill(res.data.updatedBill)
+      message.success("Bill Date Updated");
+    }
+  }
 
   if (!vendor || !billProducts) {
     return <div>Loading...</div>;
@@ -208,7 +226,9 @@ function Page() {
       <Header />
       <br />
       {bill && <h1>Vendor Bill #{bill._id}</h1>}
-      <p>Date: {bill && getISODateString(bill.date)}</p>
+      <div>Date: {bill&& 
+          <DatePicker value={dayjs(bill.date || dayjs())} onChange={(date,dateStr)=>handleDateChange(dateStr)} />
+        }</div>
       <p>Total Amount: {convertAmountAddCommas(totalAmount)}</p>
 
       <p>Total Paid : {convertAmountAddCommas(totalPaid)}</p>

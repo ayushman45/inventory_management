@@ -257,6 +257,7 @@ function Page() {
     console.log(res);
     if(res.status===200){
       setBill(res.data.updatedBill)
+      message.success("Bill Date Updated");
     }
 
   }
