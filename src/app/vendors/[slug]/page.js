@@ -42,7 +42,6 @@ function EditVendor({ vendor, getVendorForUser }) {
     let res = await createOrUpdateVendor(
       stringifyObject({ ...updatedVendor })
     );
-    console.log(parseString(res));
     if (parseString(res).status === 200) {
       getVendorForUser();
       message.success("Vendor Updated Successfully");
@@ -111,7 +110,6 @@ function Vendor() {
 
   const getVendorForUser = async () => {
     let res = await getVendor(stringifyObject({ user, id: slug }));
-    console.log(parseString(res));
     if (parseString(res).status === 200) {
       let data = JSON.parse(res).data;
       setVendor(data);

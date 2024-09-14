@@ -17,7 +17,7 @@ import { getISODateString } from "@/helper/date";
 import { getUser } from "@/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { Button, DatePicker, Input, message, Select, Table } from "antd";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import axios from "axios";
@@ -41,13 +41,7 @@ function Page() {
   const [customer, setCustomer] = useState(null);
   const [paymentType, setPaymentType] = useState("upi");
 
-  useEffect(()=>{
-    console.log(billProducts,billServices);
-
-  },[billProducts,billServices])
-
   const handleMakePayment = async () => {
-    console.log(toBePaid, payingDate);
     let payment = {
       billId: slug,
       customerId: customer,
@@ -96,7 +90,6 @@ function Page() {
         servArr.push(products[i]);
       }
     }
-    console.log(prodArr, servArr, products);
     setBillProducts(prodArr);
     setBillServices(servArr);
   };
@@ -104,15 +97,16 @@ function Page() {
   const handleDeletePayment = async(paymentId) => {
     let res = await deletePayment(stringifyObject({paymentId,type:"customer"}));
     res = parseString(res);
-    console.log(res,"done");
     if (res.status === 200) {
       message.success("Payment deleted successfully",3);
-      window.location.reload();
+        window.location.reload();
     } else {
       message.error("Failed to delete payment",3);
     }
 
   }
+
+  const navigate = useRouter();
 
   const handleBillProductDelete = async (index) => {
     let purchaseId = billProducts[index]._id;
@@ -122,6 +116,9 @@ function Page() {
     res = parseString(res);
     if (res.status === 200) {
       message.success("Product deleted successfully");
+      if(res.delete){
+        navigate.push("/customers/");
+      }
       getTotalAmount();
     } else {
       message.error(res.message);
@@ -136,6 +133,9 @@ function Page() {
     res = parseString(res);
     if (res.status === 200) {
       message.success("Service deleted successfully");
+      if(res.delete){
+        navigate.push("/customers/");
+      }
       getTotalAmount();
     } else {
       message.error(res.message);
@@ -203,7 +203,6 @@ function Page() {
       res = parseString(res);
       if (res.status === 200) {
         setBill(res.data);
-        console.log(res.data);
       }
     } catch (err) {
       console.error(err);
@@ -257,7 +256,6 @@ function Page() {
 
   const handleDateChange = async(dateStr) => {
     let res = await axios.get(`/api/bills/update?&id=${bill._id}&date=${dateStr}`);
-    console.log(res);
     if(res.status===200){
       setBill(res.data.updatedBill)
       message.success("Bill Date Updated");

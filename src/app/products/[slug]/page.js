@@ -28,12 +28,9 @@ function EditProduct({ product, getProductForUser }) {
       company,
       description,
     };
-
-    console.log(updatedProduct);
     let res = await createOrUpdateProduct(
       stringifyObject({ ...updatedProduct })
     );
-    console.log(parseString(res));
     if (parseString(res).status === 200) {
       getProductForUser();
       message.success("Product Updated Successfully");
@@ -84,7 +81,6 @@ function Product() {
 
   const getProductForUser = async () => {
     let res = await getProduct(stringifyObject({ user, id: slug }));
-    console.log(parseString(res));
     if (parseString(res).status === 200) {
       let data = JSON.parse(res).data;
       setProduct(data);

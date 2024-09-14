@@ -23,15 +23,27 @@ function ViewBills() {
     let temp={};
     for(let i=0; i<bills.length; i++) {
       let data = stringifyObject({ purchases: bills[i].purchases, type: "customer" });
-      let response = await axios.post('/api/bills/products',data);
-      console.log(response)
-      if (response.status === 200) {
-        temp[bills[i]._id] = response.data.summary;
-        
+      try{
+        let response = await axios.post('/api/bills/products',data);
+        if (response.status === 200) {
+          temp[bills[i]._id] = response.data.summary;
+          
+        }
       }
-      else{
-        break;
+      catch(err){
+        let resp = await axios.get('/api/bills/verification',{
+          headers:{
+            id: slug,
+            billId: bills[i]._id,
+            user: user,
+            type: "customer"
+          }
+        })
+        if(resp.status === 200) {
+          window.location.reload();
+        }
       }
+      
     }
     setProducts(temp);
   
@@ -39,7 +51,12 @@ function ViewBills() {
   };
 
   useEffect(() => {
-    setProductsForBill();
+    try{
+      setProductsForBill();
+    }
+    catch(err){
+      console.log(err.message)
+    }
 
   }, [bills]);
 
@@ -52,7 +69,6 @@ function ViewBills() {
           type: "customer"
         }
       });
-      console.log(res)
       if(res.status===200){
           setBills(res.data.bills);
       }

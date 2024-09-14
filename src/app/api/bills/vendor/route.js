@@ -8,7 +8,6 @@ export async function GET(req){
         let headersList = headers();
         let user = headersList.get('user');
         let vendor = headersList.get('vendor');
-        console.log(vendor,user)
         await connectDB();
         let bills = await VendorBill.find({ vendorId:vendor, user });
         if (bills && bills.length > 0){

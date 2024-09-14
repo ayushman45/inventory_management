@@ -79,7 +79,6 @@ function Expense() {
       message.warning("Please fill all the required fields");
       return;
     }
-    console.log({ user, expenseType, description, note, amount, date });
     let res = await createExpense(
       stringifyObject({
         expense: { user, expenseType, description, note, amount, date },
@@ -105,7 +104,6 @@ function Expense() {
   const fetchExpenses = async () => {
     let response = await getExpensesForUser(stringifyObject({ user }));
     response = parseString(response);
-    console.log(response);
     if (response.status === 200) {
       setExpenses(response.data);
     } else {

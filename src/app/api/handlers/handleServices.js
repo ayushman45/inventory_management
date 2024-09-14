@@ -77,7 +77,6 @@ export async function getService(req){
     try {
       await connectDB();
       const service_data = JSON.parse(req);
-      console.log(service_data);
       let id = service_data._id;
       if (!id) {
         let temp = new Service(service_data);

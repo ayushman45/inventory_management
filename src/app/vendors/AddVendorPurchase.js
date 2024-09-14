@@ -32,7 +32,6 @@ function AddVendorPurchase() {
           user,
           date: new Date(date),
         };
-        console.log(temp)
         purchases.push(temp);
       }
       ind++;
@@ -47,7 +46,6 @@ function AddVendorPurchase() {
     );
 
     res = parseString(res);
-    console.log(res,"vendor purchase")
     if (res.status === 200) {
       setBillProducts({});
       message.success("Bill Created Successfully");

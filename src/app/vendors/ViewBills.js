@@ -26,13 +26,28 @@ function ViewBills() {
         purchases: bills[i].purchases,
         type: "vendor",
       });
-
-      let response = await axios.post("/api/bills/products", data);
-      console.log(response)
-      if (response.status === 200) {
-        setProducts((prev) => {
-          return { ...prev, [bills[i]._id]: response.data.summary };
-        });
+      try{
+        let response = await axios.post("/api/bills/products", data);
+        if (response.status === 200) {
+          setProducts((prev) => {
+            return { ...prev, [bills[i]._id]: response.data.summary };
+          });
+        }
+      }
+      
+      catch(err){
+        console.log(err.message)
+        let resp = await axios.get('/api/bills/verification',{
+          headers:{
+            id: slug,
+            billId: bills[i]._id,
+            user: user,
+            type: "vendor"
+          }
+        })
+        if(resp.data.status===200){
+          window.location.reload();
+        }
       }
     }
     

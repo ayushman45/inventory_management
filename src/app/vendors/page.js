@@ -57,7 +57,6 @@ function Vendors() {
         header: true,
         skipEmptyLines: true,
         complete: async function (results) {
-          console.log(results);
           //dwst verify headers
           let res = await importVendorsFromCSV(
             stringifyObject({ user, data: results.data })

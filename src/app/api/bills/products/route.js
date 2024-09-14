@@ -10,7 +10,6 @@ export async function POST(req){
         let body = await req.json();
         let purchases = body.purchases;
         let type = body.type;
-        console.log(type,purchases);
         await connectDB();
 
         let resStr = "";

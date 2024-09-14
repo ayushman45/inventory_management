@@ -77,7 +77,6 @@ export async function getVendor(req){
     try {
       await connectDB();
       const vendor_data = JSON.parse(req);
-      console.log(vendor_data);
       let id = vendor_data._id;
       if (!id) {
         let temp = new Vendor(vendor_data);

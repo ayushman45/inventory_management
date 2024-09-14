@@ -9,7 +9,6 @@ export async function createOrUpdateCustomer(req) {
   try {
     await connectDB();
     const customer_data = JSON.parse(req);
-    console.log(customer_data);
     let id = customer_data._id;
     if (!id) {
       let temp = new Customer(customer_data);

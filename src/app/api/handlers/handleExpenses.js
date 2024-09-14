@@ -14,7 +14,6 @@ export async function createExpense(req){
             return send({status: status.FORBIDDEN, message: "Unauthorized access"});
         }
         let exp = new Expense(expense);
-        console.log(exp);
         await exp.save();
         return send({status: status.SUCCESS, data: exp});
     }
@@ -71,7 +70,6 @@ export const getExpensesForUser = async function(req){
             return send({status: status.FORBIDDEN, message: "Unauthorized access"});
         }
         let expenses = await Expense.find({user});
-        console.log(expenses,"are the expenses")
         return send({status: status.SUCCESS, data: expenses});
     }
     catch(err){

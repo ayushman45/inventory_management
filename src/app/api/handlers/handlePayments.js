@@ -40,9 +40,7 @@ export async function getPaymentsByBillId(req){
 export async function createPayment(req){
     try{
         await connectDB();
-        console.log(req,"is the request");
         let { payment, type,user } = JSON.parse(req);
-        console.log(payment,type,"is the payment");
         let newPayment;
         if(type==='vendor'){
             newPayment = new VendorDebit({...payment,user});

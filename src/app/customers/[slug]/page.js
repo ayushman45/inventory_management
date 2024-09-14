@@ -36,11 +36,9 @@ function EditCustomer({ customer, getCustomerForUser }) {
       city,
     };
 
-    console.log(updatedCustomer);
     let res = await createOrUpdateCustomer(
       stringifyObject({ ...updatedCustomer })
     );
-    console.log(parseString(res));
     if (parseString(res).status === 200) {
       getCustomerForUser();
       message.success("Customer Updated Successfully");
@@ -114,7 +112,6 @@ function Customer() {
         user, id: slug
       }
     })
-    console.log(res);
     if (res.status === 200) {
       let data = res.data;
       setCustomer(data.customer);

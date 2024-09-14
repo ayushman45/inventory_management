@@ -6,6 +6,7 @@ import {
 } from "@/app/api/handlers/handleBills";
 import {
   createPayment,
+  deletePayment,
   getPaymentsByBillId,
 } from "@/app/api/handlers/handlePayments";
 import { getPurchase } from "@/app/api/handlers/handlePurchases";
@@ -15,7 +16,7 @@ import { getISODateString } from "@/helper/date";
 import { getUser } from "@/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { Button, DatePicker, Input, message, Select, Table } from "antd";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Header from "@/Components/Header";
 import dayjs from "dayjs";
@@ -40,7 +41,6 @@ function Page() {
   const [paymentType, setPaymentType] = useState("upi");
 
   const handleMakePayment = async () => {
-    console.log(toBePaid, payingDate);
     let payment = {
       billId: slug,
       vendorId: vendor,
@@ -61,14 +61,15 @@ function Page() {
     }
   };
 
+  const navigate = useRouter();
+
   const handleDeletePayment = async (paymentId) => {
     let res = await deletePayment(
       stringifyObject({ paymentId, type: "vendor" })
     );
     res = parseString(res);
-    console.log(res, "done");
     if (res.status === 200) {
-      message.success("Payment deleted successfully", 3);
+      message.success("Payment deleted successfully", 3);  
       window.location.reload();
     } else {
       message.error("Failed to delete payment", 3);
@@ -107,6 +108,9 @@ function Page() {
     res = parseString(res);
     if (res.status === 200) {
       message.success("Product deleted successfully");
+      if(res.delete){
+        navigate.push("/customers/");
+      }
       getTotalAmount();
     } else {
       message.error(res.message);
@@ -158,7 +162,6 @@ function Page() {
       res = parseString(res);
       if (res.status === 200) {
         setBill(res.data);
-        console.log(res.data);
       }
     } catch (err) {
       console.error(err);
@@ -211,7 +214,6 @@ function Page() {
 
   const handleDateChange = async(dateStr) => {
     let res = await axios.get(`/api/vendorBills/update?&id=${bill._id}&date=${dateStr}`);
-    console.log(res);
     if(res.status===200){
       setBill(res.data.updatedBill)
       message.success("Bill Date Updated");

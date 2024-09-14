@@ -77,7 +77,6 @@ export async function getProduct(req){
     try {
       await connectDB();
       const product_data = JSON.parse(req);
-      console.log(product_data);
       let id = product_data._id;
       if (!id) {
         let temp = new Product(product_data);

@@ -10,7 +10,6 @@ export async function loginUser(req) {
   try {
     await connectDB();
     let user_data = JSON.parse(req);
-    console.log(user_data);
     let { username, password } = user_data;
 
     let user = await User.findOne({ username });

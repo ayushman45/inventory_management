@@ -10,9 +10,7 @@ export async function getPurchase(req){
     try{
         await connectDB();
         let { purchaseId, type } = JSON.parse(req);
-        console.log(req, purchaseId, type,"jus checkin");
         let purchase = type==="customer" ? await Purchase.findById(purchaseId) : await VendorPurchase.findById(purchaseId);
-        console.log(purchase,"got it");
         if(purchase){
            return send( {status:status.SUCCESS, data:purchase} );
         }

@@ -14,7 +14,6 @@ export async function GET(req){
         let id = headersList.get("id");
         let type = headersList.get("type");
         let user = headersList.get("user");
-        console.log(id, type, user)
         await connectDB();
         if(!id){
             return response({ message: "ID is required" },status.BAD_REQUEST);

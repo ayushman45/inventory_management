@@ -39,14 +39,34 @@ export async function deletePurchase(req) {
     let purchase, bill;
     if (type === "customer") {
       purchase = await Purchase.findByIdAndDelete(purchaseId);
-      bill = await Bill.findByIdAndUpdate(billId, {
-        $pull: { purchases: purchaseId },
-      });
+      bill = await Bill.findById(billId);
+      bill.purchases = bill.purchases.filter((p) => p.toString()!== purchaseId);
+      if(bill.purchases.length === 0 ){
+        await Bill.findByIdAndDelete(billId);
+        return send({
+          status: status.SUCCESS,
+          delete: true,
+          message: "Purchase deleted successfully",
+        });
+      }
+      else{
+        await bill.save();
+      }
     } else {
       purchase = await VendorPurchase.findByIdAndDelete(purchaseId);
-      bill = await VendorBill.findByIdAndUpdate(billId, {
-        $pull: { purchases: purchaseId },
-      });
+      bill = await VendorBill.findById(billId);
+      bill.purchases = bill.purchases.filter((p) => p.toString() !== purchaseId);
+      if(bill.purchases.length === 0 ){
+        await VendorBill.findByIdAndDelete(billId);
+        return send({
+          status: status.SUCCESS,
+          delete: true,
+          message: "Purchase deleted successfully",
+        });
+      }
+      else{
+        await bill.save();
+      }
     }
     if (purchase && bill) {
       return send({
@@ -81,14 +101,11 @@ export const getBillProducts = async (req) => {
       // Use a for...of loop to handle asynchronous calls in sequence
       for (const purchaseIdObj of purchases) {
         let purchaseId = purchaseIdObj.toString();
-        console.log(purchaseId);
   
         let purchase =
           type === "customer"
             ? await Purchase.findById(purchaseId)
             : await VendorPurchase.findById(purchaseId);
-  
-        console.log(purchase, "checking");
   
         if (purchase) {
           if (purchase.purchaseType) {

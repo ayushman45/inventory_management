@@ -155,8 +155,6 @@ function ExpenseAnalytics() {
       return;
     }
 
-    console.log("loading analytics")
-
     let res = await axios.get('/api/analytics?startDate='+startDate+'&endDate='+endDate+'&user='+user);
     if (res.status === 200) {
       setExpenseAmount(res.data.debits);

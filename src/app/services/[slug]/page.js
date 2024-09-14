@@ -29,11 +29,9 @@ function EditService({ service, getServiceForUser }) {
       description,
     };
 
-    console.log(updatedService);
     let res = await createOrUpdateService(
       stringifyObject({ ...updatedService })
     );
-    console.log(parseString(res));
     if (parseString(res).status === 200) {
       getServiceForUser();
       message.success("Service Updated Successfully");
@@ -88,7 +86,6 @@ function Service() {
 
   const getServiceForUser = async () => {
     let res = await getService(stringifyObject({ user, id: slug }));
-    console.log(parseString(res));
     if (parseString(res).status === 200) {
       let data = JSON.parse(res).data;
       setService(data);

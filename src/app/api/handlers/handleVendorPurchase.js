@@ -23,12 +23,10 @@ export async function createVendorBill(req) {
         let purchasesArr=[]
         //create new Purchases from purchaes array
         for(let i = 0; i < purchases.length; i++) {
-            console.log(purchases[i],"adding");
             let temp = new VendorPurchase(purchases[i]);
 
             let product = await Product.findById(purchases[i].productId);
             let quantity = product?.quantity || 0;
-            console.log(quantity,purchases[i], "fetched");
             if(!product){
                 //delete all the already made purchases
                 for(let j = 0; j < i; j++){
@@ -86,7 +84,6 @@ export async function getVendorForBill(req){
         await connectDB();
         let { billId } = JSON.parse(req);
         let bill = await VendorBill.findById(billId);
-        console.log(bill,"this is the bill")
         if(!bill){
             return send({ status:status.ERROR, message:"Vendor not found"});
         }
