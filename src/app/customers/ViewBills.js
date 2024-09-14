@@ -14,7 +14,7 @@ function ViewBills() {
   const [bills, setBills] = useState(null);
   const navigate = useRouter();
   const [products, setProducts] = useState(null);
-  const [flag,setFlag] = useState(null);
+  
 
   const setProductsForBill = async() => {
     if(!bills){
@@ -34,7 +34,7 @@ function ViewBills() {
       }
     }
     setProducts(temp);
-    setFlag(true);
+  
     
   };
 
@@ -99,9 +99,7 @@ function ViewBills() {
 
   }, [slug,user]);
 
-  if(!flag){
-    return <div>Loading...</div>
-  }
+  
 
   return (
     <div>
