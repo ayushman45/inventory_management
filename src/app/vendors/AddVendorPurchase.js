@@ -51,9 +51,10 @@ function AddVendorPurchase() {
     if (res.status === 200) {
       setBillProducts({});
       message.success("Bill Created Successfully");
-    //   navigate.push(`/bills/${res.data._id}`);
+
     } else {
       console.error("Error creating bill:", res.error);
+
     }
   };
 
@@ -76,13 +77,12 @@ function AddVendorPurchase() {
     });
   };
 
-  const handleSelectChange = (index, value,product) => {
-    console.log(product.label)
+  const handleSelectChange = (index, product) => {
     setBillProducts((prev) => ({
       ...prev,
       [index]: {
         ...prev[index],
-        productId: value,
+        productId: product.id,
         productName: product.label,
       },
     }));
@@ -112,13 +112,15 @@ function AddVendorPurchase() {
           <label>
             Product Name:
             <Select
-              onChange={(value,label) => handleSelectChange(index, value,label)}
+            showSearch
+              onChange={(value,product) => handleSelectChange(index, product)}
               style={{ width: "100%" }}
               options={products.map((product) => ({
-                value: product._id,
+                value: product.productName,
                 label: product.productName,
+                id: product._id,
               }))}
-              value={billProducts[index]?.productId || ""}
+              value={billProducts[index]?.productName || ""}
             />
           </label>
           <label>

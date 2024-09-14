@@ -1,7 +1,6 @@
 "use client";
 import {
   createOrUpdateCustomer,
-  getCustomer,
 } from "@/app/api/handlers/handleCustomers";
 import { getUser } from "@/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
@@ -110,11 +109,15 @@ function Customer() {
   const [tabItems, setTabItems] = useState(null);
 
   const getCustomerForUser = async () => {
-    let res = await getCustomer(stringifyObject({ user, id: slug }));
-    console.log(parseString(res));
-    if (parseString(res).status === 200) {
-      let data = JSON.parse(res).data;
-      setCustomer(data);
+    let res = await axios.get('/api/customers',{
+      headers:{
+        user, id: slug
+      }
+    })
+    console.log(res);
+    if (res.status === 200) {
+      let data = res.data;
+      setCustomer(data.customer);
     }
   };
 

@@ -3,13 +3,10 @@
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { getUser } from "../../helper/token";
-import {
-  getBillProducts,
-  getBillsForVendor,
-} from "../api/handlers/handleBills";
-import { parseString, stringifyObject } from "../jsonHelper";
-import { message, Table } from "antd";
+import { stringifyObject } from "../jsonHelper";
+import { Table } from "antd";
 import { getISODateString } from "../../helper/date";
+import axios from "axios";
 
 function ViewBills() {
   const { slug } = useParams();
@@ -17,78 +14,82 @@ function ViewBills() {
   const [bills, setBills] = useState(null);
   const navigate = useRouter();
   const [products, setProducts] = useState({});
+  const [flag, setFlag] = useState(null);
 
-  const setProductsForBill = async() => {
-    if(!bills){
+  const setProductsForBill = async () => {
+    if (!bills) {
       return;
     }
 
-    for(let i=0; i<bills.length; i++) {
-      let productsForBill = await getBillProducts(
-        stringifyObject({ purchases: bills[i].purchases, type: "vendor" })
-      );
-      productsForBill = parseString(productsForBill);
-      console.log(productsForBill,"done")
-      if (productsForBill.status === 200) {
-        setProducts(prev=>{
-          return {...prev, [bills[i]._id]: productsForBill.data };
+    for (let i = 0; i < bills.length; i++) {
+      let data = stringifyObject({
+        purchases: bills[i].purchases,
+        type: "vendor",
+      });
+
+      let response = await axios.post("/api/bills/products", data);
+      console.log(response)
+      if (response.status === 200) {
+        setProducts((prev) => {
+          return { ...prev, [bills[i]._id]: response.data.summary };
         });
-      } else {
-        message.warning("No products found for this bill");
       }
     }
-    
+    setFlag(true);
   };
 
   useEffect(() => {
     setProductsForBill();
-
   }, [bills]);
 
   const getBills = async () => {
     // fetch bills from server
-    let res = await getBillsForVendor(
-      stringifyObject({ vendorId: slug, user })
-    );
-    res = parseString(res);
-    console.log(res);
+    let res = await axios.get(`/api/bills/vendor`, {
+      headers: {
+        user,
+        vendor: slug,
+      },
+    });
     if (res.status === 200) {
-      setBills(res.data);
+      setBills(res.data.bills);
     }
   };
 
-  const columns =  [
-      {
-        title: "Bill Id",
-        dataIndex: "_id",
-        key: "_id",
+  const columns = useMemo(
+    ()=>[
+    {
+      title: "Bill Id",
+      dataIndex: "_id",
+      key: "_id",
+    },
+    {
+      title: "Purchases",
+      key: "purchases",
+      dataIndex: "_id",
+      render: (_id) => {
+        const productList = products?.[_id] || [];
+        return productList ? productList : "No products";
       },
-      {
-        title: "Purchases",
-        key: "purchases",
-        dataIndex: "_id",
-        render: (_id) => {
-          const productList = products?.[_id] || [];
-          return productList? productList : "No products"
-        },
-      },
-      {
-        title: "Date",
-        dataIndex: "date",
-        key: "date",
-        render: (date)=>getISODateString(date)
-      },
-    ];
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      render: (date) => getISODateString(date),
+    },
+  ],[products]);
 
   useEffect(() => {
-    if(!slug || !user){
+    if (!slug || !user) {
       return;
-
     }
 
     getBills();
+  }, [slug, user]);
 
-  }, [slug,user]);
+  if(!flag){
+    return <div>Loading...</div>
+  }
 
   return (
     <div>

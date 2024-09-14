@@ -3,7 +3,6 @@
 import {
   deletePurchase,
   getBillById,
-  updatePurchase,
 } from "@/app/api/handlers/handleBills";
 import {
   createPayment,
@@ -144,11 +143,13 @@ function Page() {
   }
 
   const handleSaveProduct = async (index) => {
-    let product = billProducts[index];
-    let res = await updatePurchase(
-      stringifyObject({ purchase: product, type: "customer" })
-    );
-    res = parseString(res);
+    let purchase = billProducts[index];
+    let data = stringifyObject({purchase})
+    let res = await axios.post('/api/purchases/update/customer', data, {
+      headers: {
+        'Content-type': 'application/json'
+      }
+    });
     if (res.status === 200) {
       message.success("Product updated successfully");
       getTotalAmount();
@@ -158,11 +159,13 @@ function Page() {
   };
 
   const handleSaveService = async (index) => {
-    let service = billServices[index];
-    let res = await updatePurchase(
-      stringifyObject({ purchase: service, type: "customer" })
-    );
-    res = parseString(res);
+    let purchase = billServices[index];
+    let data = stringifyObject({purchase})
+    let res = await axios.post('/api/purchases/update/customer', data, {
+      headers: {
+        'Content-type': 'application/json'
+      }
+    });
     if (res.status === 200) {
       message.success("Service updated successfully");
       getTotalAmount();

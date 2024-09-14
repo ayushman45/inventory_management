@@ -2,15 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { DatePicker, Select } from "antd";
-import { getAnalytics } from "../app/api/handlers/handleAnalytics";
-import { stringifyObject,parseString } from "../app/jsonHelper";
 import { getUser } from "../helper/token";
-import { convertAmount, convertAmountAddCommas } from "../helper/amount";
+import { convertAmountAddCommas } from "../helper/amount";
+import axios from "axios";
 const { RangePicker } = DatePicker;
 
 const dayjs = require("dayjs");
-
-const getYearMonth = (date) => date.year() * 12 + date.month();
 
 function DateInput({ mode, setDates,startDate,endDate }) {
     if(!mode || !startDate || !endDate) {
@@ -160,9 +157,7 @@ function ExpenseAnalytics() {
 
     console.log("loading analytics")
 
-    let res = await getAnalytics(stringifyObject({ startDate, endDate, user }));
-    res = parseString(res);
-    console.log(res);
+    let res = await axios.get('/api/analytics?startDate='+startDate+'&endDate='+endDate+'&user='+user);
     if (res.status === 200) {
       setExpenseAmount(res.data.debits);
       setIncomeAmount(res.data.credits);

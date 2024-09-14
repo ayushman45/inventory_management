@@ -2,6 +2,8 @@
 
 import { Bill } from "@/backendHelpers/models/bill";
 import { connectDB, disconnectDB } from "../../db";
+import { response } from "../../handlers/sendToFrontEnd";
+import { status } from "@/backendHelpers/status";
 
 export async function GET(req) {
   try {
@@ -12,25 +14,16 @@ export async function GET(req) {
 
     let bill = await Bill.findById(id);
     if (!bill) {
-      return new Response(JSON.stringify({ message: "Bill not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return response({ message: "Bill not found" }, status.NOT_FOUND);
     } else {
       let dt = new Date(date);
       bill.date = dt;
       let updatedBill = await bill.save();
-      return new Response(JSON.stringify({ message: "Bill Updated", updatedBill }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
+      return response({ updatedBill }, status.SUCCESS);
     }
   } catch (err) {
-    return new Response(JSON.stringify({ message: err.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+      return response({ message: "Internal Server Error" }, status.INTERNAL_SERVER_ERROR);
   } finally {
-    await disconnectDB();
+      await disconnectDB();
   }
 }

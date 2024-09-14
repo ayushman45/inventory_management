@@ -3,7 +3,6 @@
 import {
   deletePurchase,
   getBillById,
-  updatePurchase,
 } from "@/app/api/handlers/handleBills";
 import {
   createPayment,
@@ -115,11 +114,13 @@ function Page() {
   };
 
   const handleSaveProduct = async (index) => {
-    let product = billProducts[index];
-    let res = await updatePurchase(
-      stringifyObject({ purchase: product, type: "vendor" })
-    );
-    res = parseString(res);
+    let purchase = billProducts[index];
+    let data = stringifyObject({ purchase });
+    let res = await axios.post('/api/purchases/update/vendor', data, {
+      headers: {
+        'Content-type': 'application/json'
+      }
+    });
     if (res.status === 200) {
       message.success("Product updated successfully");
       getTotalAmount();

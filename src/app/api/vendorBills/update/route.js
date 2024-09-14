@@ -2,6 +2,8 @@
 
 import { connectDB, disconnectDB } from "../../db";
 import { VendorBill } from "@/backendHelpers/models/vendorBill";
+import { response } from "../../handlers/sendToFrontEnd";
+import { message } from "antd";
 
 export async function GET(req) {
   try {
@@ -12,24 +14,16 @@ export async function GET(req) {
 
     let bill = await VendorBill.findById(id);
     if (!bill) {
-      return new Response(JSON.stringify({ message: "Bill not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return response({message: "Bill not found"}, 404);
     } else {
       let dt = new Date(date);
       bill.date = dt;
       let updatedBill = await bill.save();
-      return new Response(JSON.stringify({ message: "Bill Updated", updatedBill }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
+      return response({ updatedBill }, 200);
     }
   } catch (err) {
-    return new Response(JSON.stringify({ message: err.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.error(err.message);
+    return response({ message: "Internal Server Error" }, 500);
   } finally {
     await disconnectDB();
   }

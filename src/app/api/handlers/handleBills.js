@@ -10,44 +10,6 @@ import { VendorPurchase } from "../../../backendHelpers/models/vendorPurchase";
 import { send } from "./sendToFrontEnd";
 import { status } from "../../../backendHelpers/status";
 
-export async function getBillsForCustomer(req) {
-  try {
-    await connectDB();
-    let { customerId, user } = JSON.parse(req);
-    let bills = await Bill.find({ customerId, user });
-    if (bills && bills.length > 0)
-      return send({ status: status.SUCCESS, data: bills });
-    else return send({ status: status.NOT_FOUND, message: "No bills found" });
-  } catch (error) {
-    console.error(error);
-    return send({
-      status: status.INTERNAL_SERVER_ERROR,
-      message: "An error occurred while processing your request",
-    });
-  } finally {
-    await disconnectDB();
-  }
-}
-
-export async function getBillsForVendor(req) {
-  try {
-    await connectDB();
-    let { vendorId, user } = JSON.parse(req);
-    let bills = await VendorBill.find({ vendorId, user });
-    if (bills && bills.length > 0)
-      return send({ status: status.SUCCESS, data: bills });
-    else return send({ status: status.NOT_FOUND, message: "No bills found" });
-  } catch (error) {
-    console.error(error);
-    return send({
-      status: status.INTERNAL_SERVER_ERROR,
-      message: "An error occurred while processing your request",
-    });
-  } finally {
-    await disconnectDB();
-  }
-}
-
 export async function getBillById(req) {
   try {
     await connectDB();
@@ -69,76 +31,6 @@ export async function getBillById(req) {
   }
 }
 
-export async function updatePurchase(req) {
-  try {
-    await connectDB();
-    let { purchase, type } = JSON.parse(req);
-    if (type === "vendor") {
-      let purchaseObj = await VendorPurchase.findById(purchase._id);
-      let product = await Product.findById(purchase.productId);
-      if (purchaseObj && product) {
-        console.log(product, purchaseObj);
-        product.quantity =
-          parseInt(product.quantity) - parseInt(purchaseObj.quantity);
-        product.quantity =
-          parseInt(product.quantity) + parseInt(purchase.quantity);
-        await product.save();
-        purchaseObj.quantity = parseInt(purchase.quantity);
-        purchaseObj.amount = parseInt(purchase.amount);
-        await purchaseObj.save();
-        return send({ status: status.SUCCESS, message: "Edit Successful" });
-      } else {
-        return send({
-          status: status.NOT_FOUND,
-          message: "Product or Purchase Not Found",
-        });
-      }
-    }
-    else{
-        let purchaseObj = await Purchase.findById(purchase._id);
-        let product = purchaseObj.purchaseType === 'product'? await Product.findById(purchase.productId) : await Service.findById(purchase.serviceId);
-        if (purchaseObj && product) {
-          if(purchaseObj.purchaseType === 'product'){
-            product.quantity =
-                parseInt(product.quantity) + parseInt(purchaseObj.quantity);
-            product.quantity =
-                parseInt(product.quantity) - parseInt(purchase.quantity);
-            await product.save();
-
-            purchaseObj.quantity = parseInt(purchase.quantity);
-            purchaseObj.totalValue = parseInt(purchase.totalValue);
-            await purchaseObj.save();
-
-          }
-          else{
-            purchaseObj.totalValue = parseInt(purchase.totalValue);
-            await purchaseObj.save();
-
-          }
-
-          return send({ status: status.SUCCESS, message: "Edit Successful" });
-
-        } else {
-          return send({
-            status: status.NOT_FOUND,
-            message: "Product or Purchase Not Found",
-          });
-
-        }
-    }
-
-  } catch (err) {
-    console.log(err.message);
-    return send({
-      status: status.INTERNAL_SERVER_ERROR,
-      message: "An error occurred while processing your request",
-    });
-
-  } finally {
-    await disconnectDB();
-
-  }
-}
 
 export async function deletePurchase(req) {
   try {

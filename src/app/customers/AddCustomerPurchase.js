@@ -123,7 +123,7 @@ function AddCustomerPurchase() {
         ...prev,
         [index]: {
           ...prev[index],
-          productId: product.value,
+          productId: product.id,
           productName: product.label
         },
       }));
@@ -132,7 +132,7 @@ function AddCustomerPurchase() {
         ...prev,
         [index]: {
           ...prev[index],
-          serviceId: product.value,
+          serviceId: product.id,
           serviceName: product.label,
         },
       }));
@@ -174,13 +174,15 @@ function AddCustomerPurchase() {
           <label>
             Product Name:
             <Select
+              showSearch
               onChange={(value,product) => handleSelectChange(index, product, "product")}
               style={{ width: "100%" }}
               options={products.map((product) => ({
-                value: product._id,
+                value: product.productName,
                 label: product.productName,
+                id: product._id,
               }))}
-              value={billProducts[index]?.productId || ""}
+              value={billProducts[index]?.productName || ""}
             />
           </label>
           <label>
@@ -271,13 +273,15 @@ function AddCustomerPurchase() {
           <label>
             Service Name:
             <Select
+              showSearch
               onChange={(value,product) => handleSelectChange(index, product, "service")}
               style={{ width: "100%" }}
               options={services.map((service) => ({
-                value: service._id,
+                value: service.serviceName,
                 label: service.serviceName,
+                id: service._id,
               }))}
-              value={billServices[index]?.serviceId || ""}
+              value={billServices[index]?.serviceName || ""}
             />
           </label>
           <label>

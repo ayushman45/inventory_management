@@ -3,13 +3,8 @@
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { getUser } from "../../helper/token";
-import {
-  getBillProducts,
-  getBillsForCustomer,
-  getBillsForVendor,
-} from "../api/handlers/handleBills";
-import { parseString, stringifyObject } from "../jsonHelper";
-import { message, Table } from "antd";
+import { stringifyObject } from "../jsonHelper";
+import { Table } from "antd";
 import { getISODateString } from "../../helper/date";
 import axios from "axios";
 
@@ -19,23 +14,27 @@ function ViewBills() {
   const [bills, setBills] = useState(null);
   const navigate = useRouter();
   const [products, setProducts] = useState(null);
+  const [flag,setFlag] = useState(null);
 
   const setProductsForBill = async() => {
     if(!bills){
       return;
     }
-
+    let temp={};
     for(let i=0; i<bills.length; i++) {
-      let productsForBill = await getBillProducts(
-        stringifyObject({ purchases: bills[i].purchases, type: "customer" })
-      );
-      productsForBill = parseString(productsForBill); 
-      if (productsForBill.status === 200) {
-        setProducts(prev=>{
-          return {...prev, [bills[i]._id]: productsForBill.data };
-        });
+      let data = stringifyObject({ purchases: bills[i].purchases, type: "customer" });
+      let response = await axios.post('/api/bills/products',data);
+      console.log(response)
+      if (response.status === 200) {
+        temp[bills[i]._id] = response.data.summary;
+        
+      }
+      else{
+        break;
       }
     }
+    setProducts(temp);
+    setFlag(true);
     
   };
 
@@ -46,11 +45,18 @@ function ViewBills() {
 
   const getBills = async () => {
     // fetch bills from server
-    let res = await axios.get(`/api/bills?&id=${slug}&user=${user}&type=customer`);
-    console.log(res)
-    if(res.data.status===200){
-        setBills(res.data.data);
-    }
+      let res = await axios.get(`/api/bills`,{
+        headers:{
+          id: slug,
+          user: user,
+          type: "customer"
+        }
+      });
+      console.log(res)
+      if(res.status===200){
+          setBills(res.data.bills);
+      }
+    
   };
 
   const columns = useMemo(
@@ -92,6 +98,10 @@ function ViewBills() {
     }
 
   }, [slug,user]);
+
+  if(!flag){
+    return <div>Loading...</div>
+  }
 
   return (
     <div>

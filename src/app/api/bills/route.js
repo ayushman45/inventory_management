@@ -4,48 +4,36 @@ import { Bill } from "@/backendHelpers/models/bill";
 import { status } from "../../../backendHelpers/status";
 import { connectDB, disconnectDB } from "../db";
 import { VendorBill } from "@/backendHelpers/models/vendorBill";
+import { response } from "../handlers/sendToFrontEnd";
+import { headers } from "next/headers";
 
 export async function GET(req){
     
     try{
-        let params = new URL(req.url);
-        let id=params.searchParams.get("id");
-        let type=params.searchParams.get("type");
-        let user=params.searchParams.get("user");
+        let headersList = headers();
+        let id = headersList.get("id");
+        let type = headersList.get("type");
+        let user = headersList.get("user");
+        console.log(id, type, user)
         await connectDB();
         if(!id){
-            return new Response(JSON.stringify({ message: "ID is required" }), {
-                status: status.BAD_REQUEST,
-                headers: { 'Content-Type': 'application/json' },
-            })
+            return response({ message: "ID is required" },status.BAD_REQUEST);
         }
         if(!user){
-            return new Response(JSON.stringify({ message: "User is required" }), {
-                status: status.UNAUTHORIZED,
-                headers: { 'Content-Type': 'application/json' },
-            })
+            return response({ message: "Unauthorized access" },status.UNAUTHORIZED);
         }
         if(type==="customer"){
             let bills = await Bill.find({customerId:id,user});
-            return new Response(JSON.stringify({ status: status.SUCCESS, data: bills }), {
-                status: status.OK,
-                headers: { 'Content-Type': 'application/json' },
-            })
+            return response({ bills },status.SUCCESS);
         }
         else{
             let bills = await VendorBill.find({vendorId:id,user});
-            return new Response(JSON.stringify({ status: status.SUCCESS, data: bills }), {
-                status: status.OK,
-                headers: { 'Content-Type': 'application/json' },
-            })
+            return response({ bills },status.SUCCESS);
         }
     }
     catch(error){
-        console.error(error);
-        return new Response(JSON.stringify({ status: status.INTERNAL_SERVER_ERROR, message: "An error occurred while processing your request" }), {
-            status: status.INTERNAL_SERVER_ERROR,
-            headers: { 'Content-Type': 'application/json' },
-        })
+        console.error(error.message);
+        return response({ message: "Internal Server Error" },status.INTERNAL_SERVER_ERROR);
     }
     finally{
         await disconnectDB();
