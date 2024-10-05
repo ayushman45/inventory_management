@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Button, Select, Input, message, DatePicker } from "antd";
 import { getUser } from "../../helper/token";
-import { getProductsForUser, getServicesForUser } from "../../helper/getProducts";
+import {
+  getProductsForUser,
+  getServicesForUser,
+} from "../../helper/getProducts";
 import { useParams } from "next/navigation";
-import { getISODateString, getLocaleDate } from "../../helper/date";
 import { createBill } from "../api/handlers/handleCustomerPurchase";
 import { parseString, stringifyObject } from "../jsonHelper";
 import { useRouter } from "next/navigation";
@@ -15,7 +17,8 @@ function AddCustomerPurchase() {
   const [billProducts, setBillProducts] = useState({});
   const [services, setServices] = useState([]);
   const [billServices, setBillServices] = useState({});
-  const [date,setDate]=useState(dayjs());
+  const [date, setDate] = useState(dayjs());
+  const [loadingBtn, setLoadingBtn] = useState(false);
 
   const user = getUser();
   const { slug } = useParams();
@@ -23,47 +26,51 @@ function AddCustomerPurchase() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission logic
-    let ind =0;
-  let purchases=[]
-  while(billProducts[ind] ||billServices[ind]){
-    if(billProducts[ind] && billProducts[ind].productId){
-      let temp={
-        customerId:slug,
-        productId: billProducts[ind].productId,
-        description:billProducts[ind].productName,
-        purchaseType:"product",
-        discount: billProducts[ind].discount,
-        totalValue: billProducts[ind].totalValue*(1-billProducts[ind].discount/100),
-        quantity: billProducts[ind].quantity,
-        user,
+    setLoadingBtn(true);
+    let ind = 0;
+    let purchases = [];
+    while (billProducts[ind] || billServices[ind]) {
+      if (billProducts[ind] && billProducts[ind].productId) {
+        let temp = {
+          customerId: slug,
+          productId: billProducts[ind].productId,
+          description: billProducts[ind].productName,
+          purchaseType: "product",
+          discount: billProducts[ind].discount,
+          totalValue:
+            billProducts[ind].totalValue *
+            (1 - billProducts[ind].discount / 100),
+          quantity: billProducts[ind].quantity,
+          user,
+          date: new Date(date),
+        };
+        purchases.push(temp);
+      }
+      if (billServices[ind] && billServices[ind].serviceId) {
+        let temp = {
+          customerId: slug,
+          description: billServices[ind].serviceName,
+          serviceId: billServices[ind].serviceId,
+          purchaseType: "service",
+          discount: billServices[ind].discount,
+          totalValue:
+            billServices[ind].totalValue *
+            (1 - billServices[ind].discount / 100),
+          user,
+          date: new Date(date),
+        };
+        purchases.push(temp);
+      }
+      ind++;
+    }
+    let res = await createBill(
+      stringifyObject({
+        purchases,
         date: new Date(date),
-
-      }
-      purchases.push(temp)
-    }
-    if(billServices[ind] && billServices[ind].serviceId){
-      let temp={
-        customerId:slug,
-        description:billServices[ind].serviceName,
-        serviceId: billServices[ind].serviceId,
-        purchaseType:"service",
-        discount: billServices[ind].discount,
-        totalValue: billServices[ind].totalValue*(1-billServices[ind].discount/100),
+        customerId: slug,
         user,
-        date: new Date(date)
-
-      }
-      purchases.push(temp)
-    }
-    ind++;
-    
-  }
-    let res = await createBill(stringifyObject({
-      purchases,
-      date: new Date(date),
-      customerId:slug,
-      user,
-    }));
+      })
+    );
 
     res = parseString(res);
     if (res.status === 200) {
@@ -71,12 +78,11 @@ function AddCustomerPurchase() {
       setBillServices({});
       message.success("Bill Created Successfully");
       navigate.push(`/bills/${res.data._id}`);
-
     } else {
       console.error("Error creating bill:", res.error);
-
     }
 
+    setLoadingBtn(true);
   };
 
   const getProducts = async (user) => {
@@ -124,7 +130,7 @@ function AddCustomerPurchase() {
         [index]: {
           ...prev[index],
           productId: product.id,
-          productName: product.label
+          productName: product.label,
         },
       }));
     } else {
@@ -167,7 +173,10 @@ function AddCustomerPurchase() {
   return (
     <div className="form">
       <h3>Date</h3>
-      <DatePicker onChange={(date,dateStr)=>setDate(dayjs(new Date(dateStr)))} value={date} />
+      <DatePicker
+        onChange={(date, dateStr) => setDate(dayjs(new Date(dateStr)))}
+        value={date}
+      />
       <h3>Products Purchases</h3>
       {Object.keys(billProducts).map((index) => (
         <div key={index} className="product-component">
@@ -175,8 +184,10 @@ function AddCustomerPurchase() {
             Product Name:
             <Select
               showSearch
-              onChange={(value,product) => handleSelectChange(index, product, "product")}
-              style={{ width: "100%" }}
+              onChange={(value, product) =>
+                handleSelectChange(index, product, "product")
+              }
+              style={{ width: "200px" }}
               options={products.map((product) => ({
                 value: product.productName,
                 label: product.productName,
@@ -194,6 +205,8 @@ function AddCustomerPurchase() {
                 handleInputChange(index, "quantity", e.target.value, "product")
               }
               value={billProducts[index]?.quantity || 0}
+              style={{ width: "75px" }}
+              min={0}
             />
           </label>
           <label>
@@ -210,6 +223,8 @@ function AddCustomerPurchase() {
                 )
               }
               value={billProducts[index]?.totalValue || 0}
+              style={{ width: "175px" }}
+              min={0}
             />
           </label>
           <label>
@@ -220,14 +235,10 @@ function AddCustomerPurchase() {
               max={100}
               placeholder="Enter Price"
               onChange={(e) =>
-                handleInputChange(
-                  index,
-                  "discount",
-                  e.target.value,
-                  "product"
-                )
+                handleInputChange(index, "discount", e.target.value, "product")
               }
               value={billProducts[index]?.discount || 0}
+              style={{ width: "75px" }}
             />
           </label>
           <label>
@@ -235,8 +246,14 @@ function AddCustomerPurchase() {
             <Input
               type="number"
               placeholder="Enter Price"
-              value={billProducts[index]?.discount?billProducts[index]?.totalValue*(1-(billProducts[index]?.discount/100)) : billProducts[index]?.totalValue}
+              value={
+                billProducts[index]?.discount
+                  ? billProducts[index]?.totalValue *
+                    (1 - billProducts[index]?.discount / 100)
+                  : billProducts[index]?.totalValue
+              }
               disabled
+              style={{ width: "175px" }}
             />
           </label>
           <br />
@@ -274,8 +291,10 @@ function AddCustomerPurchase() {
             Service Name:
             <Select
               showSearch
-              onChange={(value,product) => handleSelectChange(index, product, "service")}
-              style={{ width: "100%" }}
+              onChange={(value, product) =>
+                handleSelectChange(index, product, "service")
+              }
+              style={{ width: "200px" }}
               options={services.map((service) => ({
                 value: service.serviceName,
                 label: service.serviceName,
@@ -297,7 +316,9 @@ function AddCustomerPurchase() {
                   "service"
                 )
               }
+              min={0}
               value={billServices[index]?.totalValue || ""}
+              style={{ width: "150px" }}
             />
           </label>
           <label>
@@ -308,14 +329,10 @@ function AddCustomerPurchase() {
               max={100}
               placeholder="Enter Discount"
               onChange={(e) =>
-                handleInputChange(
-                  index,
-                  "discount",
-                  e.target.value,
-                  "service"
-                )
+                handleInputChange(index, "discount", e.target.value, "service")
               }
-              value={billServices[index]?.discount ||0}
+              value={billServices[index]?.discount || 0}
+              style={{ width: "75px" }}
             />
           </label>
           <label>
@@ -323,8 +340,14 @@ function AddCustomerPurchase() {
             <Input
               type="number"
               placeholder="Enter Price"
-              value={billServices[index]?.discount?billServices[index]?.totalValue*(1-(billServices[index]?.discount/100)):billServices[index]?.totalValue}
+              value={
+                billServices[index]?.discount
+                  ? billServices[index]?.totalValue *
+                    (1 - billServices[index]?.discount / 100)
+                  : billServices[index]?.totalValue
+              }
               disabled
+              style={{ width: "150px" }}
             />
           </label>
           <br />
@@ -353,7 +376,7 @@ function AddCustomerPurchase() {
       <br />
       <br />
 
-      <Button onClick={handleSubmit} type="primary">
+      <Button onClick={handleSubmit} type="primary" loading={loadingBtn}>
         Submit
       </Button>
     </div>

@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { getUser } from "../../helper/token";
 import { getProductsForUser } from "../../helper/getProducts";
@@ -14,11 +14,14 @@ function AddVendorPurchase() {
   let user = getUser();
   const [products, setProducts] = useState([]);
   const [billProducts, setBillProducts] = useState({});
-  const [date,setDate]=useState(dayjs());
+  const [date, setDate] = useState(dayjs());
+  const [loadingBtn, setLoadingBtn] = useState(false);
+  const navigate = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission logic
+    setLoadingBtn(true);
     let ind = 0;
     let purchases = [];
     while (billProducts[ind]) {
@@ -49,11 +52,11 @@ function AddVendorPurchase() {
     if (res.status === 200) {
       setBillProducts({});
       message.success("Bill Created Successfully");
-
+      navigate.push(`/vendorbills/${res.data._id}`);
     } else {
       console.error("Error creating bill:", res.error);
-
     }
+    setLoadingBtn(false);
   };
 
   const getProducts = async (user) => {
@@ -103,16 +106,19 @@ function AddVendorPurchase() {
   return (
     <div>
       <h3>Date:</h3>
-      <DatePicker onChange={(date,dateStr)=>setDate(dayjs(new Date(dateStr)))} value={date} />
+      <DatePicker
+        onChange={(date, dateStr) => setDate(dayjs(new Date(dateStr)))}
+        value={date}
+      />
       <h3>Products Purchases</h3>
       {Object.keys(billProducts).map((index) => (
         <div key={index} className="product-component">
           <label>
             Product Name:
             <Select
-            showSearch
-              onChange={(value,product) => handleSelectChange(index, product)}
-              style={{ width: "100%" }}
+              showSearch
+              onChange={(value, product) => handleSelectChange(index, product)}
+              style={{ width: "200px" }}
               options={products.map((product) => ({
                 value: product.productName,
                 label: product.productName,
@@ -130,6 +136,8 @@ function AddVendorPurchase() {
                 handleInputChange(index, "quantity", e.target.value)
               }
               value={billProducts[index]?.quantity || ""}
+              style={{ width: "75px" }}
+              min={0}
             />
           </label>
           <label>
@@ -138,13 +146,11 @@ function AddVendorPurchase() {
               type="number"
               placeholder="Enter Price"
               onChange={(e) =>
-                handleInputChange(
-                  index,
-                  "totalValue",
-                  e.target.value
-                )
+                handleInputChange(index, "totalValue", e.target.value)
               }
               value={billProducts[index]?.totalValue || ""}
+              style={{ width: "150px" }}
+              min={0}
             />
           </label>
           <br />
@@ -153,6 +159,7 @@ function AddVendorPurchase() {
             type="primary"
             danger
             onClick={() => handleBillProductDelete(index)}
+            style={{ width: "10%" }}
           >
             Delete Product
           </Button>
@@ -172,7 +179,7 @@ function AddVendorPurchase() {
       </Button>
       <br />
       <br />
-      <Button onClick={handleSubmit} type="primary">
+      <Button onClick={handleSubmit} type="primary" loading={loadingBtn}>
         Submit
       </Button>
     </div>
