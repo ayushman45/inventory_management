@@ -277,7 +277,7 @@ function Page() {
         }</div>
       <p>Total Amount: ₹{convertAmountAddCommas(Math.round(totalAmount))}</p>
 
-      <p>Total Paid : ₹{convertAmountAddCommas(totalPaid)}</p>
+      <p>Total Paid : ₹{convertAmountAddCommas(Math.round(totalPaid))}</p>
       <br />
       <br />
       {Object.keys(billProducts).map((index) => (

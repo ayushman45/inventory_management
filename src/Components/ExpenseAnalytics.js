@@ -242,11 +242,11 @@ function ExpenseAnalytics() {
       <div className="row-flex wid-100" style={{gap:"50px",justifyContent:"center"}}>
         <div id="cash-in" style={{ width: "200px" }}>
             <p>Cash In</p>
-            <p className="amount-p">₹{convertAmountAddCommas(incomeAmount)}</p>
+            <p className="amount-p">₹{convertAmountAddCommas(Math.round(incomeAmount))}</p>
         </div>
         <div id="cash-out" style={{ width: "200px" }}>
             <p>Cash Out</p>
-            <p className="amount-p">₹{convertAmountAddCommas(expenseAmount)}</p>
+            <p className="amount-p">₹{convertAmountAddCommas(Math.round(expenseAmount))}</p>
         </div>
       </div>
     </div>

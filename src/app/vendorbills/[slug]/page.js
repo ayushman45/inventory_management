@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  deletePurchase,
-  getBillById,
-} from "@/app/api/handlers/handleBills";
+import { deletePurchase, getBillById } from "@/app/api/handlers/handleBills";
 import {
   createPayment,
   deletePayment,
@@ -24,10 +21,9 @@ import axios from "axios";
 
 function Page() {
   const { slug } = useParams();
-  const [user,setUser] = useState(null);
+  const [user, setUser] = useState(null);
   useEffect(() => {
     setUser(getUser());
-
   }, []);
 
   const [bill, setBill] = useState(null);
@@ -69,7 +65,7 @@ function Page() {
     );
     res = parseString(res);
     if (res.status === 200) {
-      message.success("Payment deleted successfully", 3);  
+      message.success("Payment deleted successfully", 3);
       window.location.reload();
     } else {
       message.error("Failed to delete payment", 3);
@@ -108,7 +104,7 @@ function Page() {
     res = parseString(res);
     if (res.status === 200) {
       message.success("Product deleted successfully");
-      if(res.delete){
+      if (res.delete) {
         navigate.push("/customers/");
       }
       getTotalAmount();
@@ -120,10 +116,10 @@ function Page() {
   const handleSaveProduct = async (index) => {
     let purchase = billProducts[index];
     let data = stringifyObject({ purchase });
-    let res = await axios.post('/api/purchases/update/vendor', data, {
+    let res = await axios.post("/api/purchases/update/vendor", data, {
       headers: {
-        'Content-type': 'application/json'
-      }
+        "Content-type": "application/json",
+      },
     });
     if (res.status === 200) {
       message.success("Product updated successfully");
@@ -196,29 +192,31 @@ function Page() {
   }, [payments]);
 
   useEffect(() => {
-    if(!slug || !user){
+    if (!slug || !user) {
       return;
     }
 
     getBill();
     getAllPayments();
     getVendor();
-  }, [slug,user]); // Add slug as a dependency
+  }, [slug, user]); // Add slug as a dependency
 
   useEffect(() => {
-    if(!bill || !user){
+    if (!bill || !user) {
       return;
     }
     getTotalAmount();
   }, [bill]);
 
-  const handleDateChange = async(dateStr) => {
-    let res = await axios.get(`/api/vendorBills/update?&id=${bill._id}&date=${dateStr}`);
-    if(res.status===200){
-      setBill(res.data.updatedBill)
+  const handleDateChange = async (dateStr) => {
+    let res = await axios.get(
+      `/api/vendorBills/update?&id=${bill._id}&date=${dateStr}`
+    );
+    if (res.status === 200) {
+      setBill(res.data.updatedBill);
       message.success("Bill Date Updated");
     }
-  }
+  };
 
   if (!vendor || !billProducts) {
     return <div>Loading...</div>;
@@ -229,12 +227,18 @@ function Page() {
       <Header />
       <br />
       {bill && <h1>Vendor Bill #{bill._id}</h1>}
-      <div>Date: {bill&& 
-          <DatePicker value={dayjs(bill.date || dayjs())} onChange={(date,dateStr)=>handleDateChange(dateStr)} />
-        }</div>
-      <p>Total Amount: {convertAmountAddCommas(totalAmount)}</p>
+      <div>
+        Date:{" "}
+        {bill && (
+          <DatePicker
+            value={dayjs(bill.date || dayjs())}
+            onChange={(date, dateStr) => handleDateChange(dateStr)}
+          />
+        )}
+      </div>
+      <p>Total Amount: ₹{convertAmountAddCommas(Math.round(totalAmount))}</p>
 
-      <p>Total Paid : {convertAmountAddCommas(totalPaid)}</p>
+      <p>Total Paid : ₹{convertAmountAddCommas(Math.round(totalPaid))}</p>
       <br />
       <br />
       {Object.keys(billProducts).map((index) => (
