@@ -8,6 +8,7 @@ import { getLocaleDate } from "../../helper/date";
 import { createVendorBill } from "../api/handlers/handleVendorPurchase";
 import { parseString, stringifyObject } from "../jsonHelper";
 import dayjs from "dayjs";
+import Papa from "papaparse";
 
 function AddVendorPurchase() {
   let { slug } = useParams();
@@ -17,6 +18,47 @@ function AddVendorPurchase() {
   const [date, setDate] = useState(dayjs());
   const [loadingBtn, setLoadingBtn] = useState(false);
   const navigate = useRouter();
+
+  const handleImportProducts = () => {
+    let input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".csv";
+    input.onchange = async (e) => {
+      let file = e.target.files[0];
+      Papa.parse(event.target.files[0], {
+        header: true,
+        skipEmptyLines: true,
+        complete: async function (results) {
+          //dwst verify headers
+          let vendorPurchases = results.data;
+          let purchasesImported = [];
+          
+          vendorPurchases.forEach((product,index)=>{
+            //get product id from products arr
+            let productId = products.find((p) => p.productName === product.productName)._id;
+            if (productId) {
+              product.productId = productId;
+            } else {
+              message.error(`Product ${product.product} not found.`);
+              return;
+            }
+
+            //add to billProducts
+
+              purchasesImported.push({
+                productId: product.productId,
+                productName: product.productName.trim(),
+                quantity: parseInt(product.quantity),
+                totalValue: parseFloat(product.amount),
+              })
+          });
+
+          setBillProducts(purchasesImported);
+        },
+      });
+    };
+    input.click();
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,6 +81,7 @@ function AddVendorPurchase() {
       }
       ind++;
     }
+
     let res = await createVendorBill(
       stringifyObject({
         purchases,
@@ -77,6 +120,32 @@ function AddVendorPurchase() {
       return temp;
     });
   };
+
+  const handleDownloadProducts = (jsonObject) => {
+    let fileName = 'products.csv';
+    const csvHeader = Object.keys(jsonObject[0]).join(",") + "\n";
+    const csvRows = jsonObject.map(row => {
+        return Object.values(row).map(value => {
+            // Handle commas and quotes in values
+            if (typeof value === 'string' && value.includes(',')) {
+                return `"${value}"`;
+            }
+            return value;
+        }).join(",");
+    }).join("\n");
+
+    const csvString = csvHeader + csvRows;
+    const blob = new Blob([csvString], { type: 'text/csv' });
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+  }
 
   const handleSelectChange = (index, product) => {
     setBillProducts((prev) => ({
@@ -177,6 +246,12 @@ function AddVendorPurchase() {
       >
         Add Product
       </Button>
+      <br />
+      <br />
+      <div style={{display:"flex",flexDirection:"row",gap:"20px"}}>
+        <Button onClick={handleImportProducts} type="primary">Import Products</Button>
+        <Button onClick={()=>handleDownloadProducts(products)} type="primary">Get Products</Button>
+      </div>
       <br />
       <br />
       <Button onClick={handleSubmit} type="primary" loading={loadingBtn}>
