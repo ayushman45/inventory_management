@@ -17,7 +17,7 @@ export const convertAmountAddCommas = (amount) => {
     for (let i = temp.length - 1; i>=0; i--) {
         res=temp[i]+res;
         flag++;
-        if(flag===3){
+        if(flag===3 && i!=0){
             res=","+res;
         }
         else{
