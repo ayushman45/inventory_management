@@ -35,12 +35,11 @@ function AddVendorPurchase() {
           
           vendorPurchases.forEach((product,index)=>{
             //get product id from products arr
-            let productId = products.find((p) => p.productName === product.productName)._id;
+            let productId = products.find((p) => p.productName.trim() === product.productName.trim())?._id || null;
             if (productId) {
               product.productId = productId;
             } else {
-              message.error(`Product ${product.product} not found.`);
-              return;
+              console.log(product.productName, "not found");
             }
 
             //add to billProducts
