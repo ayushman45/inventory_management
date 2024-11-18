@@ -85,13 +85,12 @@ function DateInput({ mode, setDates,startDate,endDate }) {
   }
 }
 
-function ExpenseAnalytics() {
+function ExpenseAnalytics(props) {
   const [expenseAmount, setExpenseAmount] = useState(0);
   const [incomeAmount, setIncomeAmount] = useState(0);
   const [mode, setMode] = useState("monthly");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [user, setUser] = useState(null);
 
   const setDates = ({value, dateString,dateArr, type}) => {
     if (type === "single") {
@@ -151,11 +150,11 @@ function ExpenseAnalytics() {
   };
 
   const getAnalyticsHelper = async () => {
-    if (!user) {
+    if (!props.user.username) {
       return;
     }
 
-    let res = await axios.get('/api/analytics?startDate='+startDate+'&endDate='+endDate+'&user='+user);
+    let res = await axios.get('/api/analytics?startDate='+startDate+'&endDate='+endDate+'&user='+props.user.username);
     if (res.status === 200) {
       setExpenseAmount(res.data.debits);
       setIncomeAmount(res.data.credits);
@@ -163,11 +162,8 @@ function ExpenseAnalytics() {
       setExpenseAmount(0);
       setIncomeAmount(0);
     }
-  };
 
-  useEffect(() => {
-    setUser(getUser());
-  }, []);
+  };
 
   useEffect(() => {
     switch (mode) {

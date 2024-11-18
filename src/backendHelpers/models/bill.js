@@ -3,8 +3,10 @@ import mongoose from 'mongoose';
 
 const billSchema = new mongoose.Schema({
     customerId:{
+        type: String
+    },
+    studentId:{
         type: String,
-        required: true
     },
     purchases:{
         type: [],

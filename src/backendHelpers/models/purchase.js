@@ -2,8 +2,10 @@ import mongoose from "mongoose";
 
 const purchaseSchema = new mongoose.Schema({
     customerId:{
+        type: String
+    },
+    studentId:{
         type: String,
-        required: true
     },
     productId:{
         type: String,

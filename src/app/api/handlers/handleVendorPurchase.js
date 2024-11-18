@@ -104,7 +104,7 @@ export async function getCustomerForBill(req){
         if(!bill){
             return send({ status:status.ERROR, message:"Customer not found"});
         }
-        return send({status:status.SUCCESS, data:bill.customerId});
+        return send({status:status.SUCCESS, data:bill.customerId || bill.studentId});
         
     } catch (error) {
         return send({ status:status.INTERNAL_SERVER_ERROR, message: "An error occurred while processing your request" });

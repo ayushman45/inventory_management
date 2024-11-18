@@ -3,15 +3,18 @@
 export const getToken = () => {
     let token =JSON.parse(window.localStorage.getItem('inv-management-token'));
     //dwst verify token
-    return token; 
+    return token;
+
 }
 
 export const setToken = (token) => {
     window.localStorage.setItem('inv-management-token', JSON.stringify(token));
+
 }
 
 export const removeToken = () => {
     window.localStorage.removeItem('inv-management-token');
+
 }
 
 export const getInvUser = () =>{
@@ -37,4 +40,5 @@ export const getUser = () =>{
         return null;
     }
     return user.username;
+
 }

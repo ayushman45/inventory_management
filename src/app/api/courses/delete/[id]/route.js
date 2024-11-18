@@ -2,7 +2,7 @@
 
 import { connectDB, disconnectDB } from "@/app/api/db";
 import { status } from "@/backendHelpers/status";
-import { Customer } from "@/backendHelpers/models/customer";
+import { Course } from "@/backendHelpers/models/course";
 import { response } from "@/app/api/handlers/sendToFrontEnd";
 
 export async function GET(request, { params }) {
@@ -14,19 +14,21 @@ export async function GET(request, { params }) {
       return response({ message: "ID is required" }, status.BAD_REQUEST);
     }
 
-    let deletedCustomer = await Customer.findByIdAndDelete(id);
-    if (!deletedCustomer) {
-      return response({ message: "Customer not found" }, status.NOT_FOUND);
+    let deletedCourse = await Course.findByIdAndDelete(id);
+    if (!deletedCourse) {
+      return response({ message: "Course not found" }, status.NOT_FOUND);
     }
 
     return response(
-      { message: "Customer deleted successfully" },
+      { message: "Course deleted successfully" },
       status.SUCCESS
     );
-
   } catch (err) {
     console.error(err.message);
-    return response({ message: "Internal Server Error" }, status.INTERNAL_SERVER_ERROR);
+    return response(
+      { message: "Internal Server Error" },
+      status.INTERNAL_SERVER_ERROR
+    );
   } finally {
     await disconnectDB();
   }

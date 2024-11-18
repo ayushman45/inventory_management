@@ -23,6 +23,9 @@ export async function GET(req){
         }
         if(type==="customer"){
             let bills = await Bill.find({customerId:id,user});
+            if(!bills || bills.length === 0){
+                bills = await Bill.find({studentId:id,user});
+            }
             return response({ bills },status.SUCCESS);
         }
         else{

@@ -1,6 +1,6 @@
 "use server"
 
-import { Customer } from "@/backendHelpers/models/customer";
+import { Student } from "@/backendHelpers/models/student";
 import { connectDB, disconnectDB } from "../db";
 import { response } from "../handlers/sendToFrontEnd";
 import { headers } from "next/headers";
@@ -15,15 +15,15 @@ export async function GET(req){
             return response({message:"Unauthorized access"}, 401);
     
         }
-        let customer = await Customer.findById(id);
-        if(!customer){
+        let student = await Student.findById(id);
+        if(!student){
             return response({message:"Unauthorized access"}, 401);
         }
-        if(customer.user !== user){
+        if(student.user !== user){
             return response({message:"Unauthorized access"}, 401);
         }
 
-        return response({customer},200);
+        return response({student},200);
     }
     catch(err){
         return response({message:err.message}, 500);

@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 const paymentSchema = new mongoose.Schema({
     customerId:{
         type: String,
-        required: true
+    },
+    studentId:{
+        type: String,
     },
    billId:{
         type: String,

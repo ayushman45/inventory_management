@@ -9,13 +9,15 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    fathersName: {
+    gender: {
         type: String,
         required: true
     },
+    fathersName: {
+        type: String,
+    },
     mothersOrGuardianName:{
         type:String,
-        required:true
     },
     phone: {
         type: String,
@@ -23,15 +25,12 @@ const studentSchema = new mongoose.Schema({
     },
     dob: {
         type: String,
-        required: true
     },
     email: {
         type: String,
-        required: true
     },
     address: {
         type: String,
-        required: true
     },
     date: {
         type: String,
