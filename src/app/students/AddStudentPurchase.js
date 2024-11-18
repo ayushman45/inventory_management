@@ -83,7 +83,7 @@ function AddStudentPurchase() {
       setBillProducts({});
       setBillServices({});
       message.success("Bill Created Successfully");
-      navigate.push(`/bills/${res.data._id}`);
+      navigate.push(`/studentbills/${res.data._id}`);
     } else {
       console.error("Error creating bill:", res.error);
     }
