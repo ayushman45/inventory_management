@@ -200,6 +200,7 @@ function Page() {
       let res = await getBillById(
         stringifyObject({ billId: slug, user, type: "customer" })
       );
+      console.log(res)
       res = parseString(res);
       if (res.status === 200) {
         setBill(res.data);

@@ -84,13 +84,19 @@ function AddVendorPurchase() {
     let res = await createVendorBill(
       stringifyObject({
         purchases,
-        date: getLocaleDate(new Date()),
+        date: (new Date(date)),
         vendorId: slug,
         user,
       })
     );
-
+    console.log({
+      purchases,
+      date: getLocaleDate(new Date()),
+      vendorId: slug,
+      user,
+    })
     res = parseString(res);
+    console.log(res);
     if (res.status === 200) {
       setBillProducts({});
       message.success("Bill Created Successfully");
