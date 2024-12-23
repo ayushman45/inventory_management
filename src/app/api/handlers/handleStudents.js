@@ -13,6 +13,7 @@ export async function createOrUpdateStudent(req) {
     if (!id) {
       let temp = new Student(student_data);
       await temp.save();
+      console.log(temp);
       return send({ status: status.SUCCESS, data: temp });
     } else {
       let temp = await Student.findByIdAndUpdate(id, student_data, {

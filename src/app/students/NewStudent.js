@@ -1,11 +1,12 @@
 "iuse client";
 
-import { Button, DatePicker, Form, Input, message } from "antd";
+import { Button, DatePicker, Form, Input, message, Select } from "antd";
 import React, { useRef, useState } from "react";
 import { getInvUser, getToken } from "../../helper/token";
 import { getLocaleDate } from "../../helper/date";
 import { createOrUpdateStudent } from "../api/handlers/handleStudents";
 import { parseString, stringifyObject } from "../jsonHelper";
+import { Option } from "antd/es/mentions";
 
 function NewStudent({ onClose }) {
   const nameRef = useRef(null);
@@ -19,6 +20,7 @@ function NewStudent({ onClose }) {
   const docRef = useRef(null);
   const docIdRef = useRef(null);
   const registrationRef = useRef(null);
+  const [gender,setGender] = useState("male");
 
   const handleSubmit = async(e) => {
     e.preventDefault();
@@ -34,8 +36,9 @@ function NewStudent({ onClose }) {
     let docId = docIdRef.current.input.value;
     let registrationNumber = registrationRef.current.input.value;
     let user = await getInvUser().username;
-    let resp = await createOrUpdateStudent(stringifyObject({ name, email, phone, dob, address, city, user }));
+    let resp = await createOrUpdateStudent(stringifyObject({ name, email, phone, dob, address, city, user,fathersName,mothersOrGuardianName,doc, docId,registrationNumber,gender,date:new Date(Date.now()) }));
     let res = parseString(resp);
+    console.log(resp);
     if (res.status === 200) {
       message.success("Student Created Successfully");
       onClose();
@@ -44,6 +47,8 @@ function NewStudent({ onClose }) {
      message.error("Failed to create student");
      onClose();
     }
+    globalThis?.window?.location.reload();
+    
   };
 
   return (
@@ -81,6 +86,13 @@ function NewStudent({ onClose }) {
         </Form.Item>
         <Form.Item label="Document ID Number">
           <Input placeholder="Enter Document ID Number" ref={docIdRef} />
+        </Form.Item>
+        <Form.Item label="Gender">
+          <Select onChange={(g)=>setGender(g)}>
+            <Option value="male">Male</Option>
+            <Option value="female">Female</Option>
+            <Option value="others">Others</Option>
+          </Select>
         </Form.Item>
         <Form.Item style={{display:"flex",flexDirection:"row", gap:"10px"}}>
           <Button type="primary" onClick={handleSubmit}>

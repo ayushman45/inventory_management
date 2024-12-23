@@ -4,6 +4,7 @@ import { connectDB, disconnectDB } from "../db";
 const { Course } = require("../../../backendHelpers/models/course");
 import { send } from "./sendToFrontEnd";
 import { status } from "../../../backendHelpers/status";
+import { Batch } from "@/backendHelpers/models/batch";
 
 export async function importCoursesFromCSV(req) {
   try {
@@ -73,6 +74,26 @@ export async function getCourse(req){
     }
   }
 
+  export async function getAllBatches(req){
+    try{
+      await connectDB();
+      let {user} = JSON.parse(req);
+      if(!user){
+        return send({status:status.FORBIDDEN, message:"Unauthorized access"});
+
+      }
+      let batches = await Batch.find({user});
+      return send({ status: status.SUCCESS, data: batches });
+    } catch (err) {
+      return send({
+        status: status.INTERNAL_SERVER_ERROR,
+        message: err.message,
+      });
+    } finally {
+      await disconnectDB();
+    }
+  }
+
   export async function createOrUpdateCourse(req) {
     try {
       await connectDB();
@@ -86,6 +107,34 @@ export async function getCourse(req){
         return send({ status: status.SUCCESS, data: temp });
       } else {
         let temp = await Course.findByIdAndUpdate(id, course_data, {
+          new: true,
+        });
+        return send({ status: status.SUCCESS, data: temp });
+      }
+    } catch (err) {
+      return send({
+        status: status.INTERNAL_SERVER_ERROR,
+        message: err.message,
+      });
+    } finally {
+      await disconnectDB();
+    }
+  }
+
+
+  export async function createOrUpdateBatch(req) {
+    try {
+      await connectDB();
+      console.log(req)
+      const batch_data = JSON.parse(req);
+      let id = batch_data._id;
+      if (!id) {
+        let temp = new Batch(batch_data);
+        console.log(temp);
+        await temp.save();
+        return send({ status: status.SUCCESS, data: temp });
+      } else {
+        let temp = await Batch.findByIdAndUpdate(id, batch_data, {
           new: true,
         });
         return send({ status: status.SUCCESS, data: temp });
