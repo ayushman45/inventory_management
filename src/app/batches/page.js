@@ -3,7 +3,7 @@
 import { Button, message, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import ModalHelper from "../../Components/ModalHelper";
-import { getBatchesforUser } from "../../helper/getCourses";
+import { getBatchesforUser, getCoursesForUser } from "../../helper/getCourses";
 import { getUser } from "../../helper/token";
 import Searchbar from "../../Components/Searchbar";
 import { useRouter } from "next/navigation";
@@ -12,8 +12,10 @@ import NewBatch from "./NewBatch";
 
 function Batches() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [batches, setBatches] = useState(null);
+  const [batches, setBatches] = useState([]);
   const [user,setUser] = useState(null);
+  const [courses,setCourses] = useState([]);
+
   useEffect(() => {
     setUser(getUser());
 
@@ -22,7 +24,14 @@ function Batches() {
 
   const fetchBatches = async () => {
     let batches = await getBatchesforUser(user);
-    setBatches(batches);
+    console.log(batches);
+    if(batches)
+      setBatches(batches);
+
+    let coursesTemp =await getCoursesForUser(user);
+    if(coursesTemp)
+      setCourses(coursesTemp);
+
   };
 
   const columns = [
@@ -90,6 +99,7 @@ function Batches() {
         ViewComponent={NewBatch}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+        courses={courses}
       />
       {batches?.length > 0 && (
         <Table

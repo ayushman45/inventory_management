@@ -7,32 +7,17 @@ import { createOrUpdateBatch } from "../api/handlers/handleCourses";
 import { parseString, stringifyObject } from "../jsonHelper";
 import { getCoursesForUser } from "@/helper/getCourses";
 
-function NewBatch({ onClose }) {
+function NewBatch({ onClose,courses }) {
   const nameRef = useRef(null);
   const [date,setDate] = useState(null);
   const [course,setCourse] = useState(null);
-  const [courses,setCourses] = useState([]);
   const [user,setUser] = useState(null);
 
   useEffect(()=>{
     let user = getUser();
     setUser(user);
 
-  },[])
-
-  useEffect(()=>{
-    async function helper(){
-        if(!user){
-            return;
-    
-        }
-        let coursesTemp =await getCoursesForUser(user);
-        console.log(coursesTemp)
-        setCourses(coursesTemp);
-    }
-    helper();
-
-  },[user]);    
+  },[])  
 
   const handleSubmit = async(e) => {
     e.preventDefault();

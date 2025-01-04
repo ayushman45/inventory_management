@@ -198,6 +198,11 @@ function ExpenseAnalytics(props) {
 
   useEffect(() => {
     // Fetch data based on selected mode, start date, and end date
+    if(!mode || !startDate || !endDate){
+      return;
+
+    }
+
     getAnalyticsHelper();
   }, [mode,startDate, endDate]);
 
