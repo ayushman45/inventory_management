@@ -239,7 +239,7 @@ function Page() {
         )}
         <br />
         <br />
-        <Input disabled value={bill.invoice||"NA"} onChange={(e)=>setInvoice(e.target.value)}/>
+        <Input style={{width:"400px"}} disabled value={bill.invoice||"NA"} onChange={(e)=>setInvoice(e.target.value)}/>
 
       </div>
       <p>Total Amount: ₹{convertAmountAddCommas(Math.round(totalAmount))}</p>
