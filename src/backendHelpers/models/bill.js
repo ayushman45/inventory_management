@@ -19,6 +19,10 @@ const billSchema = new mongoose.Schema({
     date:{
         type: Date,
         default: Date.now
+    },
+    invoice:{
+        type: String,
+        default: "NA"
     }
 
 });

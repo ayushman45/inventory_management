@@ -36,10 +36,10 @@ function AddStudentPurchase() {
           productId: billProducts[ind].productId,
           description: billProducts[ind].productName,
           purchaseType: "product",
-          discount: billProducts[ind].discount,
+          discount: billProducts[ind].discount || 0,
           totalValue:
             billProducts[ind].totalValue *
-            (1 - billProducts[ind].discount / 100),
+            (1 - (billProducts[ind].discount||0) / 100),
           quantity: billProducts[ind].quantity,
           user,
           date: new Date(date),
@@ -52,10 +52,10 @@ function AddStudentPurchase() {
           description: billServices[ind].serviceName,
           serviceId: billServices[ind].serviceId,
           purchaseType: "service",
-          discount: billServices[ind].discount,
+          discount: billServices[ind].discount||0,
           totalValue:
             billServices[ind].totalValue *
-            (1 - billServices[ind].discount / 100),
+            (1 - (billServices[ind].discount||0) / 100),
           user,
           date: new Date(date),
         };

@@ -17,6 +17,7 @@ function AddVendorPurchase() {
   const [billProducts, setBillProducts] = useState({});
   const [date, setDate] = useState(dayjs());
   const [loadingBtn, setLoadingBtn] = useState(false);
+  const [invoice,setInvoice] = useState("");
   const navigate = useRouter();
 
   const handleImportProducts = () => {
@@ -86,6 +87,7 @@ function AddVendorPurchase() {
         purchases,
         date: (new Date(date)),
         vendorId: slug,
+        invoice,
         user,
       })
     );
@@ -184,6 +186,12 @@ function AddVendorPurchase() {
         onChange={(date, dateStr) => setDate(dayjs(new Date(dateStr)))}
         value={date}
       />
+      <h3>Invoice Id : </h3>
+      <Input
+        onChange={(e)=>setInvoice(e.target.value)}
+        style={{ width: "405px" }}
+        value={invoice}
+        />
       <h3>Products Purchases</h3>
       {Object.keys(billProducts).map((index) => (
         <div key={index} className="product-component">

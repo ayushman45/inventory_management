@@ -7,41 +7,24 @@ import { createOrUpdateBatch } from "../api/handlers/handleCourses";
 import { parseString, stringifyObject } from "../jsonHelper";
 import { getCoursesForUser } from "@/helper/getCourses";
 
-function NewBatch({ onClose }) {
+function NewBatch({ onClose,courses }) {
   const nameRef = useRef(null);
   const [date,setDate] = useState(null);
-  const [course,setCourse] = useState(null);
-  const [courses,setCourses] = useState([]);
+  const [course,setCourse] = useState(courses.length>0?courses[0].courseName:"");
   const [user,setUser] = useState(null);
 
   useEffect(()=>{
     let user = getUser();
     setUser(user);
 
-  },[])
-
-  useEffect(()=>{
-    async function helper(){
-        if(!user){
-            return;
-    
-        }
-        let coursesTemp =await getCoursesForUser(user);
-        console.log(coursesTemp)
-        setCourses(coursesTemp);
-    }
-    helper();
-
-  },[user]);    
+  },[])  
 
   const handleSubmit = async(e) => {
     e.preventDefault();
     let batchName = nameRef.current.input.value;
-    let startDate = null;
-    let courseName = null;
     
     let user = await getInvUser().username;
-    let resp = await createOrUpdateBatch(stringifyObject({ batchName,startDate,courseName,user }));
+    let resp = await createOrUpdateBatch(stringifyObject({ batchName,date,courseName:course,user }));
     let res = parseString(resp);
     if (res.status === 200) {
       message.success("Batch Created Successfully");
@@ -58,6 +41,10 @@ function NewBatch({ onClose }) {
         <div>Please Add Some Courses First</div>
     )
   }
+
+  useEffect(()=>{
+    console.log(courses);
+  },[])
 
   return (
     <div>
@@ -81,7 +68,9 @@ function NewBatch({ onClose }) {
             {
                 courses.length>0 && courses.map(crse=>{
                     console.log(crse.courseName);
+                    return(
                     <Select.Option value={crse.courseName}>{crse.courseName}</Select.Option>
+                    )
                 })
             }
         </Select>

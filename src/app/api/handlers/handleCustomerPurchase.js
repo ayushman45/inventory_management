@@ -46,6 +46,7 @@ export async function createBill(req) {
       }
       purchasesArr.push(temp._id);
       temp.save();
+      console.log(temp);
     }
 
     let bill = new Bill({

@@ -72,6 +72,7 @@ function Page() {
           stringifyObject({ purchaseId, type: "customer" })
         );
         res = parseString(res);
+        console.log(res);
         if (res.status === 200) {
           total += res.data.totalValue;
           products.push(res.data);
@@ -201,6 +202,7 @@ function Page() {
         stringifyObject({ billId: slug, user, type: "customer" })
       );
       res = parseString(res);
+      console.log(res);
       if (res.status === 200) {
         setBill(res.data);
       }
@@ -276,9 +278,9 @@ function Page() {
       <div>Date: {bill&& 
           <DatePicker value={dayjs(bill.date || dayjs())} onChange={(date,dateStr)=>handleDateChange(dateStr)} />
         }</div>
-      <p>Total Amount: ₹{convertAmountAddCommas(Math.round(totalAmount))}</p>
+      <p>Total Amount: ₹{Math.round(totalAmount)}</p>
 
-      <p>Total Paid : ₹{convertAmountAddCommas(Math.round(totalPaid))}</p>
+      <p>Total Paid : ₹{totalPaid}</p>
       <br />
       <br />
       {Object.keys(billProducts).map((index) => (

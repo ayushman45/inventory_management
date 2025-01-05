@@ -3,26 +3,50 @@
 import { Button, message, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import ModalHelper from "../../Components/ModalHelper";
-import { getBatchesforUser } from "../../helper/getCourses";
+import { getBatchesforUser, getCoursesForUser } from "../../helper/getCourses";
 import { getUser } from "../../helper/token";
 import Searchbar from "../../Components/Searchbar";
 import { useRouter } from "next/navigation";
 import Header from "@/Components/Header";
 import NewBatch from "./NewBatch";
 
+function Toggler({id}){
+
+  return(
+    <Button onClick={()=>console.log(id)}>Change Status</Button>
+  )
+}
+
+function Delete({id}){
+  
+  return(
+    <Button onClick={()=>console.log(id)} danger>Delete</Button>
+  )
+}
+
 function Batches() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [batches, setBatches] = useState(null);
+  const [batches, setBatches] = useState([]);
   const [user,setUser] = useState(null);
+  const [courses,setCourses] = useState([]);
+
   useEffect(() => {
     setUser(getUser());
 
   }, []);
+
   const navigate = useRouter();
 
   const fetchBatches = async () => {
-    let batches = await getBatchesforUser(user);
-    setBatches(batches);
+    let batchesTemp = await getBatchesforUser(user);
+    console.log(batchesTemp);
+    if(batchesTemp)
+      setBatches(batchesTemp);
+
+    let coursesTemp =await getCoursesForUser(user);
+    if(coursesTemp)
+      setCourses(coursesTemp);
+
   };
 
   const columns = [
@@ -32,9 +56,10 @@ function Batches() {
       key: "batchName",
     },
     {
-      title: "Active",
+      title: "Status",
       dataIndex: "active",
       key: "active",
+      render : (text) => text?"Active":"Not Active",
     },
     {
       title: "Course",
@@ -45,6 +70,22 @@ function Batches() {
         title: "Start Date",
         dataIndex: "startDate",
         key: "startDate"
+    },
+    {
+      title: "Status Toggle",
+      render : (bat)=>{
+        return(
+          <Toggler id={bat._id} />
+        )
+      }
+    },
+    {
+      title: "Delete",
+      render : (bat)=>{
+        return(
+          <Delete id={bat._id} />
+        )
+      }
     }
   ];
 
@@ -56,7 +97,8 @@ function Batches() {
     if (!user) {
       return;
     }
-
+    console.log(user);
+    
     fetchBatches();
   }, [user]);
 
@@ -90,19 +132,13 @@ function Batches() {
         ViewComponent={NewBatch}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+        courses={courses}
       />
       {batches?.length > 0 && (
         <Table
           dataSource={batches}
           columns={columns}
           rowKey={"_id"}
-          onRow={(record, rowIndex) => {
-            return {
-              onClick: (event) => {
-                navigate.push(`/batches/${record._id}`);
-              },
-            };
-          }}
         />
       )}
 

@@ -48,6 +48,10 @@ const studentSchema = new mongoose.Schema({
     user:{
         type: String,
         required: true
+    },
+    batches:{
+        type:[],
+        default:[]
     }
     
 });

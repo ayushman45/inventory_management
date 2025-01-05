@@ -9,6 +9,7 @@ const batchSchema = new mongoose.Schema({
     },
     active: {
         type: Boolean,
+        default: true   
 
     },
     startDate:{
@@ -18,6 +19,10 @@ const batchSchema = new mongoose.Schema({
     courseName:{
         type: String
 
+    },
+    user:{
+        type: String,
+        required: true
     }
     
 });

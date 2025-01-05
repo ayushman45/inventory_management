@@ -1,19 +1,148 @@
 "use client";
-import {
-  createOrUpdateStudent,
-} from "@/app/api/handlers/handleStudents";
+import { createOrUpdateStudent } from "@/app/api/handlers/handleStudents";
 import { getUser } from "@/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Button, message, Tabs, Typography } from "antd";
+import { Button, message, Modal, Tabs, Typography } from "antd";
 import { getLocaleDate } from "@/helper/date";
 import AddStudentPurchase from "../AddStudentPurchase";
 import ViewBills from "../ViewBills";
 import Header from "@/Components/Header";
 import axios from "axios";
+import { getBatchesforUser } from "@/helper/getCourses";
+
+import "./style.css";
+import { addBatchForStudent } from "@/app/api/handlers/handleAddBatches";
 
 const { Title, Paragraph, Text } = Typography;
+
+function Batches({ id }) {
+  const [allBatches, setAllBatches] = useState([]);
+  const [batches, setBatches] = useState([]);
+  const [show, setShow] = useState(false);
+  const { slug } = useParams();
+  const [batch, setBatch] = useState("");
+  const [otherBatches,setOtherBatches] = useState([]);
+
+  useEffect(() => {
+    if (allBatches > 0) {
+      setBatch(JSON.stringify(allBatches[0]));
+    }
+  }, [allBatches]);
+
+  const onSubmit = async() => {
+    let res = await addBatchForStudent(JSON.stringify({batchName:JSON.parse(batch).batchName,studentId:slug}));
+    if(JSON.parse(res).status === 200){
+      setShow(false);
+
+    }
+
+  };
+
+  const handleGetBatch = async () => {
+    let student = await axios.get("/api/students", {
+      headers: {
+        user: getUser(),
+        id: slug,
+      },
+    });
+    let temp = student.data.student.batches;
+    // console.log(student,slug);
+    if (temp.length > 0) {
+      setBatches(temp);
+    }
+
+    let batchesTemp = await getBatchesforUser(getUser());
+    let aux = [];
+    let aux2 = [];
+    if (batchesTemp.length > 0) {
+      for (let i = 0; i < batchesTemp.length; i++) {
+        if (!temp.includes(batchesTemp[i].batchName)) {
+          aux.push(batchesTemp[i]);
+        }
+        else{
+          aux2.push(batchesTemp[i]);
+        }
+      }
+    }
+    if (aux.length > 0) {
+      setBatch(JSON.stringify(aux[0]));
+    }
+
+    if(aux2.length > 0){
+      setOtherBatches(aux2);
+
+    }
+
+    setAllBatches(aux);
+  };
+
+  useEffect(() => {
+    handleGetBatch();
+  }, []);
+
+  return (
+    <div>
+      <div>
+        <Button onClick={() => setShow((prev) => !prev)}>Add to Batch</Button>
+      </div>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <td>Batch Name</td>
+              <td>Status</td>
+              <td>Course</td>
+              <td>Delete from Batch</td>
+            </tr>
+          </thead>
+
+          <tbody>
+            {otherBatches.length > 0 ? (
+              otherBatches.map((bat) => {
+                return (
+                  <tr key={bat._id}>
+                    <td>{bat.batchName}</td>
+                    <td>{bat.active ? "Active" : "Not Active"}</td>
+                    <td>{bat.courseName}</td>
+                    <td>
+                      <Button danger>Delete from Batch</Button>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan={4}>No Batches Added</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      <Modal
+        title={"Add to Batch"}
+        open={show}
+        onClose={() => setShow(false)}
+        onCancel={() => setShow(false)}
+      >
+        <div>
+          <select onChange={(e) => setBatch(e.currentTarget.value)}>
+            {allBatches.length > 0 &&
+              allBatches.map((bat) => {
+                return (
+                  <option value={JSON.stringify(bat)}>{bat.batchName}</option>
+                );
+              })}
+          </select>
+          <br />
+          {batch.length > 0 && <h5>{JSON.parse(batch).courseName}</h5>}
+          <Button onClick={onSubmit}>Add</Button>
+        </div>
+      </Modal>
+    </div>
+  );
+}
 
 function EditStudent({ student, getStudentForUser }) {
   const [name, setName] = useState(student.name);
@@ -21,12 +150,14 @@ function EditStudent({ student, getStudentForUser }) {
   const [dob, setDob] = useState(student.dob);
   const [phone, setPhone] = useState(student.phone);
   const [address, setAddress] = useState(student.address);
-  const [docId,setDocId]=useState(student.docId);
-  const [doc,setDoc]=useState(student.doc);
-  const [guardian,setGuardian] = useState(student.mothersOrGuardianName);
-  const [father,setFather] = useState(student.fathersName);
-  const [registrationNumber,setRegistrationNumber] = useState(student.registrationNumber);
-  const [gender,setGender] = useState(student.gender);
+  const [docId, setDocId] = useState(student.docId);
+  const [doc, setDoc] = useState(student.doc);
+  const [guardian, setGuardian] = useState(student.mothersOrGuardianName);
+  const [father, setFather] = useState(student.fathersName);
+  const [registrationNumber, setRegistrationNumber] = useState(
+    student.registrationNumber
+  );
+  const [gender, setGender] = useState(student.gender);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,9 +172,9 @@ function EditStudent({ student, getStudentForUser }) {
       address,
       doc,
       docId,
-      mothersOrGuardianName:guardian,
-      fathersName:father,
-      registrationNumber
+      mothersOrGuardianName: guardian,
+      fathersName: father,
+      registrationNumber,
     };
 
     let res = await createOrUpdateStudent(
@@ -68,7 +199,7 @@ function EditStudent({ student, getStudentForUser }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-         <label>Registration Number</label>
+        <label>Registration Number</label>
         <input
           type="text"
           value={registrationNumber}
@@ -136,22 +267,22 @@ function EditStudent({ student, getStudentForUser }) {
 
 function Student() {
   const { slug } = useParams();
-  const [user,setUser] = useState(null);
+  const [user, setUser] = useState(null);
   const navigate = useRouter();
   useEffect(() => {
     setUser(getUser());
-
   }, []);
 
   const [student, setStudent] = useState(null);
   const [tabItems, setTabItems] = useState(null);
 
   const getStudentForUser = async () => {
-    let res = await axios.get('/api/students',{
-      headers:{
-        user, id: slug
-      }
-    })
+    let res = await axios.get("/api/students", {
+      headers: {
+        user,
+        id: slug,
+      },
+    });
     if (res.status === 200) {
       let data = res.data;
       setStudent(data.student);
@@ -160,12 +291,11 @@ function Student() {
 
   const handleDeleteStudent = async () => {
     let res = await axios.get(`/api/students/delete/${slug}`);
-    if(res.status === 200){
+    if (res.status === 200) {
       message.success("Student Deleted Successfully");
       navigate.push("/students");
     }
-  
-  }
+  };
 
   const onChange = (key) => {
     console.log(key);
@@ -216,9 +346,13 @@ function Student() {
       {
         key: "3",
         label: "Delete",
-        children: <div>
-          <Button type="primary" danger onClick={handleDeleteStudent}>Delete Student</Button>
-        </div>,
+        children: (
+          <div>
+            <Button type="primary" danger onClick={handleDeleteStudent}>
+              Delete Student
+            </Button>
+          </div>
+        ),
       },
       {
         key: "4",
@@ -229,11 +363,15 @@ function Student() {
         key: "5",
         label: "View Bills",
         children: <ViewBills />,
-      }
+      },
+      {
+        key: "6",
+        label: "Batches",
+        children: <Batches />,
+      },
     ];
 
     setTabItems(items);
-
   }, [student]);
 
   useEffect(() => {

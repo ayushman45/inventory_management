@@ -76,6 +76,7 @@ export async function getCourse(req){
 
   export async function getAllBatches(req){
     try{
+      console.log(req)
       await connectDB();
       let {user} = JSON.parse(req);
       if(!user){
@@ -83,6 +84,7 @@ export async function getCourse(req){
 
       }
       let batches = await Batch.find({user});
+      console.log(user,batches);
       return send({ status: status.SUCCESS, data: batches });
     } catch (err) {
       return send({

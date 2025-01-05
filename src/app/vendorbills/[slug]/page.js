@@ -35,6 +35,7 @@ function Page() {
   const [payingDate, setPayingDate] = useState(null);
   const [vendor, setVendor] = useState(null);
   const [paymentType, setPaymentType] = useState("upi");
+  const [invoice,setInvoice] = useState("");
 
   const handleMakePayment = async () => {
     let payment = {
@@ -158,6 +159,7 @@ function Page() {
       res = parseString(res);
       if (res.status === 200) {
         setBill(res.data);
+        
       }
     } catch (err) {
       console.error(err);
@@ -235,6 +237,10 @@ function Page() {
             onChange={(date, dateStr) => handleDateChange(dateStr)}
           />
         )}
+        <br />
+        <br />
+        <Input disabled value={bill.invoice||"NA"} onChange={(e)=>setInvoice(e.target.value)}/>
+
       </div>
       <p>Total Amount: ₹{convertAmountAddCommas(Math.round(totalAmount))}</p>
 
