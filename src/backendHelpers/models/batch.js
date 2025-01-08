@@ -20,6 +20,10 @@ const batchSchema = new mongoose.Schema({
         type: String
 
     },
+    fees:{
+        type: Number,
+        default:0
+    },
     user:{
         type: String,
         required: true

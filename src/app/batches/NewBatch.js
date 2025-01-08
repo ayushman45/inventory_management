@@ -12,6 +12,7 @@ function NewBatch({ onClose,courses }) {
   const [date,setDate] = useState(null);
   const [course,setCourse] = useState(courses.length>0?courses[0].courseName:"");
   const [user,setUser] = useState(null);
+  const [fees,setFees] = useState(0);
 
   useEffect(()=>{
     let user = getUser();
@@ -24,7 +25,7 @@ function NewBatch({ onClose,courses }) {
     let batchName = nameRef.current.input.value;
     
     let user = await getInvUser().username;
-    let resp = await createOrUpdateBatch(stringifyObject({ batchName,date,courseName:course,user }));
+    let resp = await createOrUpdateBatch(stringifyObject({ batchName,date,courseName:course,user,fees }));
     let res = parseString(resp);
     if (res.status === 200) {
       message.success("Batch Created Successfully");
@@ -69,6 +70,9 @@ function NewBatch({ onClose,courses }) {
                 })
             }
         </Select>
+        </Form.Item>
+        <Form.Item>
+          <Input onChange={(e)=>setFees(e.currentTarget.value)} value={fees} />
         </Form.Item>
         <Form.Item>
           <Button type="primary" onClick={handleSubmit}>

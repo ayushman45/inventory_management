@@ -9,6 +9,8 @@ import Searchbar from "../../Components/Searchbar";
 import { useRouter } from "next/navigation";
 import Header from "@/Components/Header";
 import NewBatch from "./NewBatch";
+import { getLocaleDate } from "@/helper/date";
+import { deleteBatch } from "../api/handlers/handleAddBatches";
 
 function Toggler({id}){
 
@@ -18,9 +20,18 @@ function Toggler({id}){
 }
 
 function Delete({id}){
+  const handleDel = async() => {
+    let res = await deleteBatch(JSON.stringify({id}));
+    console.log(JSON.parse(res))
+    if(JSON.parse(res).status === 200 ){
+      window.location.reload();
+
+    }
+
+  }
   
   return(
-    <Button onClick={()=>console.log(id)} danger>Delete</Button>
+    <Button onClick={handleDel} danger>Delete</Button>
   )
 }
 
@@ -68,7 +79,15 @@ function Batches() {
     {
         title: "Start Date",
         dataIndex: "startDate",
-        key: "startDate"
+        key: "startDate",
+        render : (bat) => {
+          return getLocaleDate(bat);
+        }
+    },
+    {
+      title: "Total Fees",
+      dataIndex: "fees",
+      key: "fees"
     },
     {
       title: "Status Toggle",

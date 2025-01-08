@@ -1,5 +1,6 @@
 "use server"
 
+import { Batch } from "@/backendHelpers/models/batch";
 import { Student } from "@/backendHelpers/models/student";
 
 export const addBatchForStudent = async(req) => {
@@ -21,4 +22,18 @@ export const addBatchForStudent = async(req) => {
         return JSON.stringify({status:500});
     }
 
+}
+
+export const deleteBatch = async (req) => {
+    try{
+        let {id} = JSON.parse(req);
+        await Batch.deleteOne({_id:id});
+        return JSON.stringify({status:200});
+
+    }
+    catch(e){
+        console.log(e.message);
+        return JSON.stringify({status:500});
+
+    }
 }
