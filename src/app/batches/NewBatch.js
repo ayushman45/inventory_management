@@ -42,10 +42,6 @@ function NewBatch({ onClose,courses }) {
     )
   }
 
-  useEffect(()=>{
-    console.log(courses);
-  },[])
-
   return (
     <div>
       <Form>
@@ -67,7 +63,6 @@ function NewBatch({ onClose,courses }) {
         >
             {
                 courses.length>0 && courses.map(crse=>{
-                    console.log(crse.courseName);
                     return(
                     <Select.Option value={crse.courseName}>{crse.courseName}</Select.Option>
                     )

@@ -13,7 +13,6 @@ export async function createVendorBill(req) {
     try {
         await connectDB();
         let { user, purchases, date, vendorId,invoice } = JSON.parse(req);
-        console.log(JSON.parse(req))
         if (!user) {
             return send({ status:status.FORBIDDEN, message:"Unauthorized access"});
         }

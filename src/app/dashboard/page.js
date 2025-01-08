@@ -25,10 +25,6 @@ function Dashboard() {
 
   }, []);
 
-  useEffect(()=>{
-    console.log(user);
-  },[user])
-
   if(!user){
     return <></>
   }
@@ -40,12 +36,11 @@ function Dashboard() {
       <br />
       <div className="row-flex wid-100" style={{ justifyContent: "center" }}>
         <div className="row-flex " style={{ gap: "20px", flexWrap: "wrap" }}>
-        {
-            !user?.academyEnabled &&
+        
           <Button type="primary" onClick={() => navigate.push("/customers")}>
             Customers
           </Button>
-}
+          
           <Button type="primary" onClick={() => navigate.push("/vendors")}>
             Vendors
           </Button>

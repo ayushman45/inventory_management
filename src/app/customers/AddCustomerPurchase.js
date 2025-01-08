@@ -189,7 +189,7 @@ function AddCustomerPurchase() {
               }
               style={{ width: "200px" }}
               options={products.map((product) => ({
-                value: product.productName,
+                value: product._id,
                 label: product.productName,
                 id: product._id,
               }))}
@@ -296,7 +296,7 @@ function AddCustomerPurchase() {
               }
               style={{ width: "200px" }}
               options={services.map((service) => ({
-                value: service.serviceName,
+                value: service._id,
                 label: service.serviceName,
                 id: service._id,
               }))}

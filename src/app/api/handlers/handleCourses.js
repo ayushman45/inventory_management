@@ -76,7 +76,6 @@ export async function getCourse(req){
 
   export async function getAllBatches(req){
     try{
-      console.log(req)
       await connectDB();
       let {user} = JSON.parse(req);
       if(!user){
@@ -84,7 +83,6 @@ export async function getCourse(req){
 
       }
       let batches = await Batch.find({user});
-      console.log(user,batches);
       return send({ status: status.SUCCESS, data: batches });
     } catch (err) {
       return send({
@@ -99,12 +97,10 @@ export async function getCourse(req){
   export async function createOrUpdateCourse(req) {
     try {
       await connectDB();
-      console.log(req)
       const course_data = JSON.parse(req);
       let id = course_data._id;
       if (!id) {
         let temp = new Course(course_data);
-        console.log(temp);
         await temp.save();
         return send({ status: status.SUCCESS, data: temp });
       } else {
@@ -127,12 +123,10 @@ export async function getCourse(req){
   export async function createOrUpdateBatch(req) {
     try {
       await connectDB();
-      console.log(req)
       const batch_data = JSON.parse(req);
       let id = batch_data._id;
       if (!id) {
         let temp = new Batch(batch_data);
-        console.log(temp);
         await temp.save();
         return send({ status: status.SUCCESS, data: temp });
       } else {

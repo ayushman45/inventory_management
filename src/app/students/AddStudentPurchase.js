@@ -195,7 +195,7 @@ function AddStudentPurchase() {
               }
               style={{ width: "200px" }}
               options={products.map((product) => ({
-                value: product.productName,
+                value: product._id,
                 label: product.productName,
                 id: product._id,
               }))}

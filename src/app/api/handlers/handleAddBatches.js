@@ -6,7 +6,6 @@ export const addBatchForStudent = async(req) => {
     try{
         let {batchName,studentId} = JSON.parse(req);
         let student = await Student.findOne({_id:studentId});
-        console.log(student);
         let temp = student.batches || [];
         temp.push(batchName);
         if(!student.gender){

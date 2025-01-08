@@ -38,7 +38,6 @@ function NewStudent({ onClose }) {
     let user = await getInvUser().username;
     let resp = await createOrUpdateStudent(stringifyObject({ name, email, phone, dob, address, city, user,fathersName,mothersOrGuardianName,doc, docId,registrationNumber,gender,date:new Date(Date.now()) }));
     let res = parseString(resp);
-    console.log(resp);
     if (res.status === 200) {
       message.success("Student Created Successfully");
       onClose();

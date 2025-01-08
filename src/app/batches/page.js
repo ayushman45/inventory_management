@@ -39,7 +39,6 @@ function Batches() {
 
   const fetchBatches = async () => {
     let batchesTemp = await getBatchesforUser(user);
-    console.log(batchesTemp);
     if(batchesTemp)
       setBatches(batchesTemp);
 
@@ -97,7 +96,6 @@ function Batches() {
     if (!user) {
       return;
     }
-    console.log(user);
     
     fetchBatches();
   }, [user]);

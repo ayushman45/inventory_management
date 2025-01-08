@@ -91,14 +91,7 @@ function AddVendorPurchase() {
         user,
       })
     );
-    console.log({
-      purchases,
-      date: getLocaleDate(new Date()),
-      vendorId: slug,
-      user,
-    })
     res = parseString(res);
-    console.log(res);
     if (res.status === 200) {
       setBillProducts({});
       message.success("Bill Created Successfully");
@@ -112,6 +105,7 @@ function AddVendorPurchase() {
   const getProducts = async (user) => {
     const temp = await getProductsForUser(user);
     setProducts(temp);
+    
   };
 
   const handleBillProductDelete = (index) => {
@@ -202,7 +196,7 @@ function AddVendorPurchase() {
               onChange={(value, product) => handleSelectChange(index, product)}
               style={{ width: "200px" }}
               options={products.map((product) => ({
-                value: product.productName,
+                value: product._id,
                 label: product.productName,
                 id: product._id,
               }))}

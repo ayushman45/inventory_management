@@ -72,7 +72,6 @@ function Page() {
           stringifyObject({ purchaseId, type: "customer" })
         );
         res = parseString(res);
-        console.log(res);
         if (res.status === 200) {
           total += res.data.totalValue;
           products.push(res.data);
@@ -202,7 +201,6 @@ function Page() {
         stringifyObject({ billId: slug, user, type: "customer" })
       );
       res = parseString(res);
-      console.log(res);
       if (res.status === 200) {
         setBill(res.data);
       }
@@ -225,7 +223,6 @@ function Page() {
   const getStudent = async () => {
     let res = await getCustomerForBill(stringifyObject({ billId: slug }));
     res = parseString(res);
-    console.log(res);
     if (res.status === 200) {
       setStudent(res.data);
     }
