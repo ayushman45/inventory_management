@@ -196,7 +196,7 @@ function AddVendorPurchase() {
               onChange={(value, product) => handleSelectChange(index, product)}
               style={{ width: "200px" }}
               options={products.map((product) => ({
-                value: product._id,
+                value: product.productName+product._id,
                 label: product.productName,
                 id: product._id,
               }))}
