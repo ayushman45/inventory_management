@@ -8,6 +8,62 @@ import { Table } from "antd";
 import { getISODateString } from "../../helper/date";
 import axios from "axios";
 
+function ShowTable({productList}){
+  const [ total, setTotal ] = useState(0);
+  const [arr,setArr] = useState(productList.split(","));
+
+  useEffect(()=>{
+    let tot = 0;
+    for(let i = 0; i<arr.length; i++){
+      let dat = arr[i].split('$')[1];
+      if(dat){
+        tot+=parseInt(dat);
+      }
+      
+      console.log(tot);
+    }
+    setTotal(tot);
+  },[arr]);
+ 
+
+  return(
+    <table>
+      <thead>
+        <tr>
+          <th>
+            Product Name
+          </th>
+          <th>
+            Quantity
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          arr.map(row=>{
+            let data = row.split('$');
+            if(!data[0] || !data[1]){
+              return;
+            }
+            
+            return(
+              <tr>
+                <td>{data[0]}</td>
+                <td>{data[1]}</td>
+              </tr>
+            )
+          })
+        }
+        <tr>
+          <td>Total</td>
+          <td>{total}</td>
+        </tr>
+      </tbody>
+    </table>
+  )
+}
+
+
 function ViewBills() {
   const { slug } = useParams();
   const user = getUser();
@@ -88,7 +144,7 @@ function ViewBills() {
         dataIndex: "_id",
         render: (_id) => {
           const productList = products?.[_id] || [];
-          return productList? productList : "No products"
+          return productList&&productList.length>0? <ShowTable productList={productList} /> : "No products"
         },
       },
       {

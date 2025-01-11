@@ -28,7 +28,7 @@ export async function POST(req){
             if (purchase.purchaseType === "product") {
               let product = await Product.findById(purchase.productId);
               if (product) {
-                resStr += `${product.productName} x ${purchase.quantity}, `;
+                resStr += `${product.productName} $ ${purchase.quantity}, `;
               }
             } else {
               let service = await Service.findById(purchase.purchaseId);
@@ -39,7 +39,7 @@ export async function POST(req){
           } else {
             let product = await Product.findById(purchase.productId);
             if (product) {
-              resStr += `${product.productName} x ${purchase.quantity}, `;
+              resStr += `${product.productName} $ ${purchase.quantity}, `;
             }
           }
         } 

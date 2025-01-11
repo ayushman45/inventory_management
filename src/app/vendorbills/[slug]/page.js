@@ -18,6 +18,7 @@ import React, { useEffect, useState } from "react";
 import Header from "@/Components/Header";
 import dayjs from "dayjs";
 import axios from "axios";
+import { handleVendorInvoiceChange } from "@/app/api/handlers/handleInvoices";
 
 function Page() {
   const { slug } = useParams();
@@ -159,6 +160,7 @@ function Page() {
       res = parseString(res);
       if (res.status === 200) {
         setBill(res.data);
+        setInvoice(res.data.invoice || "NA")
         
       }
     } catch (err) {
@@ -220,6 +222,16 @@ function Page() {
     }
   };
 
+  const handleVendorInvoice = async() => {
+    let res = await handleVendorInvoiceChange(JSON.stringify({invoice,id:slug}));
+    if(JSON.parse(res).status === 200){
+       message.info("Invoice updated");
+    }
+    else{
+      message.info("Unable to update right now");
+    }
+  }
+
   if (!vendor || !billProducts) {
     return <div>Loading...</div>;
   }
@@ -239,7 +251,8 @@ function Page() {
         )}
         <br />
         <br />
-        <Input style={{width:"400px"}} disabled value={bill.invoice||"NA"} onChange={(e)=>setInvoice(e.target.value)}/>
+        <Input style={{width:"400px"}} value={invoice} onChange={(e)=>setInvoice(e.target.value)}/>
+        <Button onClick={handleVendorInvoice}>Update Invoice</Button>
 
       </div>
       <p>Total Amount: ₹{convertAmountAddCommas(Math.round(totalAmount))}</p>
