@@ -7,10 +7,10 @@ import { VendorDebit } from "@/backendHelpers/models/vendorDebit"
 import { Payment } from "@/backendHelpers/models/payment"
 import { response } from "../handlers/sendToFrontEnd"
 
-export async function GET(req){
+export async function POST(req){
     let url = new URLSearchParams(req.url)
-    let startDate = url.get('startDate')
-    let endDate = url.get('endDate')
+    let body = await req.json();
+    let {startDate,endDate} = body;
     let user = url.get('user')
     try{
         await connectDB();
@@ -22,15 +22,18 @@ export async function GET(req){
         }
         let credits = 0;
         let debits = 0;
-        let expenses = await Expense.find({user, date:{$gte:new Date(start), $lte:new Date(end)}})
+        let expenses = await Expense.find({user, date:{$gte:start, $lte:end}})
+        console.log(expenses)
         if(expenses){
             debits += expenses.reduce((acc, curr) => acc + curr.amount, 0);
         }
-        let vendorDebits = await VendorDebit.find({user, date:{$gte:new Date(start), $lte:new Date(end)}})
+        let vendorDebits = await VendorDebit.find({user, date:{$gte:start, $lte:end}})
+        console.log(vendorDebits)
         if(vendorDebits){
             debits += vendorDebits.reduce((acc, curr) => acc + curr.amount, 0);
         }
-        let incomes = await Payment.find({user, date:{$gte:new Date(start), $lte:new Date(end)}})
+        let incomes = await Payment.find({user, date:{$gte:start, $lte:end}})
+        console.log(incomes)
         if(incomes){
             credits += incomes.reduce((acc, curr) => acc + curr.amount, 0);
         }

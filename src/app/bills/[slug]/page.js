@@ -10,7 +10,7 @@ import {
   getPaymentsByBillId,
 } from "@/app/api/handlers/handlePayments";
 import { getPurchase } from "@/app/api/handlers/handlePurchases";
-import { getCustomerForBill, getVendorForBill } from "@/app/api/handlers/handleVendorPurchase";
+import { getCustomerForBill, getVendorForBill, updateGST } from "@/app/api/handlers/handleVendorPurchase";
 import Header from "@/Components/Header";
 import { convertAmountAddCommas } from "@/helper/amount";
 import { getISODateString } from "@/helper/date";
@@ -37,9 +37,11 @@ function Page() {
   const [totalPaid, setTotalPaid] = useState(0);
   const [payments, setPayments] = useState([]);
   const [toBePaid, setToBePaid] = useState(0);
-  const [payingDate, setPayingDate] = useState(null);
+  const [payingDate, setPayingDate] = useState(dayjs().startOf("day"));
   const [customer, setCustomer] = useState(null);
   const [paymentType, setPaymentType] = useState("upi");
+  const [cgst,setCgst] = useState(0);
+  const [sgst,setSgst] = useState(0);
 
   const handleMakePayment = async () => {
     let payment = {
@@ -194,6 +196,25 @@ function Page() {
     }
   };
 
+   const handleUpdateGST = async() =>{
+      let res = await updateGST(JSON.stringify({
+        vendorBill:slug,
+        cgst,
+        sgst,
+        type:"customer"
+      }));
+      console.log(res);
+      if(JSON.parse(res).status===200){
+        window.location.reload();
+  
+      }
+      else{
+        message.warning("Some error");
+        
+      }
+  
+    }
+
   const getBill = async () => {
     // fetch bill data from server
     try {
@@ -203,6 +224,8 @@ function Page() {
       res = parseString(res);
       if (res.status === 200) {
         setBill(res.data);
+        setCgst(res.data.cgst);
+        setSgst(res.data.sgst);
       }
     } catch (err) {
       console.error(err);
@@ -278,8 +301,15 @@ function Page() {
       <p>Total Amount: ₹{convertAmountAddCommas(Math.round(totalAmount))}</p>
 
       <p>Total Paid : ₹{convertAmountAddCommas(Math.round(totalPaid))}</p>
-      <br />
-      <br />
+      <p>CGST: ₹{convertAmountAddCommas(Math.round(totalAmount*(bill.cgst||0)/100))}</p>
+            <Input value={cgst} onChange={(e)=>setCgst(e.currentTarget.value)} style={{width:"200px"}} />
+            <p>SGST: ₹{convertAmountAddCommas(Math.round(totalAmount*(bill.sgst||0)/100))}</p>
+            <Input value={sgst} onChange={(e)=>setSgst(e.currentTarget.value)} style={{width:"200px"}} />
+            <br />
+            <br />
+            <Button onClick={handleUpdateGST}>Update GST</Button>
+            <br />
+            <br />
       {Object.keys(billProducts).map((index) => (
         <div key={index} className="product-component">
           <label>
@@ -452,7 +482,7 @@ function Page() {
           type="number"
           placeholder="Enter Amount"
           onChange={(e) => setToBePaid(Number(e.target.value))}
-          value={toBePaid}
+          value={toBePaid || ""}
         />
       </label>
       <br />
@@ -470,6 +500,7 @@ function Page() {
           onChange={(e, date) => {
             setPayingDate(date);
           }}
+          value={payingDate}
         />
       </label>
       <br />

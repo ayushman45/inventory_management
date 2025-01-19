@@ -22,6 +22,14 @@ const vendorBillSchema = new mongoose.Schema({
     invoice:{
         type: String,
         default: "NA"
+    },
+    cgst:{
+        type:Number,
+        default: 0
+    },
+    sgst:{
+        type:Number,
+        default: 0
     }
 
 });

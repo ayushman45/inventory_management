@@ -15,9 +15,11 @@ function AddVendorPurchase() {
   let user = getUser();
   const [products, setProducts] = useState([]);
   const [billProducts, setBillProducts] = useState({});
-  const [date, setDate] = useState(dayjs());
+  const [date, setDate] = useState(dayjs(new Date(Date.now())));
   const [loadingBtn, setLoadingBtn] = useState(false);
-  const [invoice,setInvoice] = useState("");
+  const [invoice, setInvoice] = useState("");
+  const [cgst, setCgst] = useState(0);
+  const [sgst, setSgst] = useState(0);
   const navigate = useRouter();
 
   const handleImportProducts = () => {
@@ -33,10 +35,13 @@ function AddVendorPurchase() {
           //dwst verify headers
           let vendorPurchases = results.data;
           let purchasesImported = [];
-          
-          vendorPurchases.forEach((product,index)=>{
+
+          vendorPurchases.forEach((product, index) => {
             //get product id from products arr
-            let productId = products.find((p) => p.productName.trim() === product.productName.trim())?._id || null;
+            let productId =
+              products.find(
+                (p) => p.productName.trim() === product.productName.trim()
+              )?._id || null;
             if (productId) {
               product.productId = productId;
             } else {
@@ -45,12 +50,12 @@ function AddVendorPurchase() {
 
             //add to billProducts
 
-              purchasesImported.push({
-                productId: product.productId,
-                productName: product.productName.trim(),
-                quantity: parseInt(product.quantity),
-                totalValue: parseFloat(product.amount),
-              })
+            purchasesImported.push({
+              productId: product.productId,
+              productName: product.productName.trim(),
+              quantity: parseInt(product.quantity),
+              totalValue: parseFloat(product.amount),
+            });
           });
 
           setBillProducts(purchasesImported);
@@ -58,7 +63,7 @@ function AddVendorPurchase() {
       });
     };
     input.click();
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -85,9 +90,11 @@ function AddVendorPurchase() {
     let res = await createVendorBill(
       stringifyObject({
         purchases,
-        date: (new Date(date)),
+        date: new Date(date),
         vendorId: slug,
         invoice,
+        cgst,
+        sgst,
         user,
       })
     );
@@ -105,7 +112,6 @@ function AddVendorPurchase() {
   const getProducts = async (user) => {
     const temp = await getProductsForUser(user);
     setProducts(temp);
-    
   };
 
   const handleBillProductDelete = (index) => {
@@ -123,30 +129,33 @@ function AddVendorPurchase() {
   };
 
   const handleDownloadProducts = (jsonObject) => {
-    let fileName = 'products.csv';
+    let fileName = "products.csv";
     const csvHeader = Object.keys(jsonObject[0]).join(",") + "\n";
-    const csvRows = jsonObject.map(row => {
-        return Object.values(row).map(value => {
+    const csvRows = jsonObject
+      .map((row) => {
+        return Object.values(row)
+          .map((value) => {
             // Handle commas and quotes in values
-            if (typeof value === 'string' && value.includes(',')) {
-                return `"${value}"`;
+            if (typeof value === "string" && value.includes(",")) {
+              return `"${value}"`;
             }
             return value;
-        }).join(",");
-    }).join("\n");
+          })
+          .join(",");
+      })
+      .join("\n");
 
     const csvString = csvHeader + csvRows;
-    const blob = new Blob([csvString], { type: 'text/csv' });
+    const blob = new Blob([csvString], { type: "text/csv" });
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = fileName;
 
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-  }
+  };
 
   const handleSelectChange = (index, product) => {
     setBillProducts((prev) => ({
@@ -182,10 +191,10 @@ function AddVendorPurchase() {
       />
       <h3>Invoice Id : </h3>
       <Input
-        onChange={(e)=>setInvoice(e.target.value)}
+        onChange={(e) => setInvoice(e.target.value)}
         style={{ width: "405px" }}
         value={invoice}
-        />
+      />
       <h3>Products Purchases</h3>
       {Object.keys(billProducts).map((index) => (
         <div key={index} className="product-component">
@@ -196,7 +205,7 @@ function AddVendorPurchase() {
               onChange={(value, product) => handleSelectChange(index, product)}
               style={{ width: "200px" }}
               options={products.map((product) => ({
-                value: product.productName+product._id,
+                value: product.productName + product._id,
                 label: product.productName,
                 id: product._id,
               }))}
@@ -255,12 +264,38 @@ function AddVendorPurchase() {
       </Button>
       <br />
       <br />
-      <div style={{display:"flex",flexDirection:"row",gap:"20px"}}>
-        <Button onClick={handleImportProducts} type="primary">Import Products</Button>
-        <Button onClick={()=>handleDownloadProducts(products)} type="primary">Get Products</Button>
+      <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
+        <Button onClick={handleImportProducts} type="primary">
+          Import Products
+        </Button>
+        <Button onClick={() => handleDownloadProducts(products)} type="primary">
+          Get Products
+        </Button>
       </div>
       <br />
       <br />
+      <label>CGST(in %):</label>
+      <br />
+      <Input
+        type="Number"
+        onChange={(e) => setCgst(e.currentTarget.value)}
+        style={{ width: "200px" }}
+      />
+
+      <br />
+      <br />
+
+      <label>SGST(in %):</label>
+      <br />
+      <Input
+        type="Number"
+        onChange={(e) => setSgst(e.currentTarget.value)}
+        style={{ width: "200px" }}
+      />
+
+      <br />
+      <br />
+
       <Button onClick={handleSubmit} type="primary" loading={loadingBtn}>
         Submit
       </Button>

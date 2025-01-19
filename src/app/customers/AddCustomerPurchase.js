@@ -17,8 +17,10 @@ function AddCustomerPurchase() {
   const [billProducts, setBillProducts] = useState({});
   const [services, setServices] = useState([]);
   const [billServices, setBillServices] = useState({});
-  const [date, setDate] = useState(dayjs());
+  const [date, setDate] = useState(dayjs(new Date(Date.now())));
   const [loadingBtn, setLoadingBtn] = useState(false);
+  const [cgst,setCgst] = useState(0);
+  const [sgst,setSgst] = useState(0);
 
   const user = getUser();
   const { slug } = useParams();
@@ -37,9 +39,9 @@ function AddCustomerPurchase() {
           description: billProducts[ind].productName,
           purchaseType: "product",
           discount: billProducts[ind].discount || 0,
-          totalValue:
+          totalValue:billProducts[ind].discount?
             billProducts[ind].totalValue *
-            (1 - billProducts[ind].discount||0 / 100),
+            (1 - billProducts[ind].discount / 100):billProducts[ind].totalValue,
           quantity: billProducts[ind].quantity,
           user,
           date: new Date(date),
@@ -53,9 +55,9 @@ function AddCustomerPurchase() {
           serviceId: billServices[ind].serviceId,
           purchaseType: "service",
           discount: billServices[ind].discount || 0,
-          totalValue:
+          totalValue:billServices[ind].discount?
             billServices[ind].totalValue *
-            (1 - billServices[ind].discount || 0 / 100),
+            (1 - (billServices[ind].discount / 100)):billServices[ind].totalValue,
           user,
           date: new Date(date),
         };
@@ -63,11 +65,14 @@ function AddCustomerPurchase() {
       }
       ind++;
     }
+
     let res = await createBill(
       stringifyObject({
         purchases,
         date: new Date(date),
         customerId: slug,
+        cgst,
+        sgst,
         user,
       })
     );
@@ -204,13 +209,13 @@ function AddCustomerPurchase() {
               onChange={(e) =>
                 handleInputChange(index, "quantity", e.target.value, "product")
               }
-              value={billProducts[index]?.quantity || 0}
+              value={billProducts[index]?.quantity || ""}
               style={{ width: "75px" }}
               min={0}
             />
           </label>
           <label>
-            Price:
+            Price(including GST):
             <Input
               type="number"
               placeholder="Enter Price"
@@ -222,7 +227,7 @@ function AddCustomerPurchase() {
                   "product"
                 )
               }
-              value={billProducts[index]?.totalValue || 0}
+              value={billProducts[index]?.totalValue || ""}
               style={{ width: "175px" }}
               min={0}
             />
@@ -237,7 +242,7 @@ function AddCustomerPurchase() {
               onChange={(e) =>
                 handleInputChange(index, "discount", e.target.value, "product")
               }
-              value={billProducts[index]?.discount || 0}
+              value={billProducts[index]?.discount || ""}
               style={{ width: "75px" }}
             />
           </label>
@@ -304,7 +309,7 @@ function AddCustomerPurchase() {
             />
           </label>
           <label>
-            Price:
+            Price(including GST):
             <Input
               type="number"
               placeholder="Enter Price"
@@ -373,6 +378,19 @@ function AddCustomerPurchase() {
       >
         Add Service
       </Button>
+      <br />
+      <br />
+      <label>CGST(in %):</label>
+      <br />
+      <Input type="Number" onChange={(e)=>setCgst(e.currentTarget.value)} style={{width:"200px"}}/>
+
+      <br />
+      <br />
+
+      <label>SGST(in %):</label>
+      <br />
+      <Input type="Number" onChange={(e)=>setSgst(e.currentTarget.value)} style={{width:"200px"}}/>
+
       <br />
       <br />
 

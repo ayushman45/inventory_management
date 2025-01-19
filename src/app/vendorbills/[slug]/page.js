@@ -7,7 +7,7 @@ import {
   getPaymentsByBillId,
 } from "@/app/api/handlers/handlePayments";
 import { getPurchase } from "@/app/api/handlers/handlePurchases";
-import { getVendorForBill } from "@/app/api/handlers/handleVendorPurchase";
+import { getVendorForBill, updateGST } from "@/app/api/handlers/handleVendorPurchase";
 import { convertAmountAddCommas } from "@/helper/amount";
 import { getISODateString } from "@/helper/date";
 import { getUser } from "@/helper/token";
@@ -38,6 +38,9 @@ function Page() {
   const [paymentType, setPaymentType] = useState("upi");
   const [invoice,setInvoice] = useState("");
 
+  const [cgst,setCgst] = useState(0);
+  const [sgst,setSgst] = useState(0);
+
   const handleMakePayment = async () => {
     let payment = {
       billId: slug,
@@ -60,6 +63,24 @@ function Page() {
   };
 
   const navigate = useRouter();
+
+  const handleUpdateGST = async() =>{
+    let res = await updateGST(JSON.stringify({
+      vendorBill:slug,
+      cgst,
+      sgst
+    }));
+    console.log(res);
+    if(JSON.parse(res).status===200){
+      window.location.reload();
+
+    }
+    else{
+      message.warning("Some error");
+      
+    }
+
+  }
 
   const handleDeletePayment = async (paymentId) => {
     let res = await deletePayment(
@@ -160,6 +181,9 @@ function Page() {
       res = parseString(res);
       if (res.status === 200) {
         setBill(res.data);
+        setCgst(res.data.cgst);
+        setSgst(res.data.sgst);
+        console.log(res.data)
         setInvoice(res.data.invoice || "NA")
         
       }
@@ -252,12 +276,18 @@ function Page() {
         <br />
         <br />
         <Input style={{width:"400px"}} value={invoice} onChange={(e)=>setInvoice(e.target.value)}/>
-        <Button onClick={handleVendorInvoice}>Update Invoice</Button>
+        <Button onClick={handleVendorInvoice} style={{marginLeft:"10px"}}>Update Invoice</Button>
 
       </div>
       <p>Total Amount: ₹{convertAmountAddCommas(Math.round(totalAmount))}</p>
-
       <p>Total Paid : ₹{convertAmountAddCommas(Math.round(totalPaid))}</p>
+      <p>CGST: ₹{convertAmountAddCommas(Math.round(totalAmount*(bill.cgst||0)/100))}</p>
+      <Input value={cgst} onChange={(e)=>setCgst(e.currentTarget.value)} style={{width:"200px"}} />
+      <p>SGST: ₹{convertAmountAddCommas(Math.round(totalAmount*(bill.sgst||0)/100))}</p>
+      <Input value={sgst} onChange={(e)=>setSgst(e.currentTarget.value)} style={{width:"200px"}} />
+      <br />
+      <br />
+      <Button onClick={handleUpdateGST}>Update GST</Button>
       <br />
       <br />
       {Object.keys(billProducts).map((index) => (

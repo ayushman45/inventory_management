@@ -11,7 +11,7 @@ import { Product } from "../../../backendHelpers/models/product";
 export async function createBill(req) {
   try {
     await connectDB();
-    let { user, purchases, date, customerId } = JSON.parse(req);
+    let { user, purchases, date, customerId,cgst,sgst } = JSON.parse(req);
     if (!user) {
       return send({ status: status.FORBIDDEN, message: "Unauthorized access" });
     }
@@ -52,6 +52,8 @@ export async function createBill(req) {
       customerId,
       date,
       purchases: purchasesArr,
+      cgst,
+      sgst,
       user,
     });
 

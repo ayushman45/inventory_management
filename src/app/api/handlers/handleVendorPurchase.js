@@ -12,7 +12,7 @@ import { Bill } from "../../../backendHelpers/models/bill";
 export async function createVendorBill(req) {
     try {
         await connectDB();
-        let { user, purchases, date, vendorId,invoice } = JSON.parse(req);
+        let { user, purchases, date, vendorId,invoice,cgst,sgst } = JSON.parse(req);
         if (!user) {
             return send({ status:status.FORBIDDEN, message:"Unauthorized access"});
         }
@@ -67,6 +67,8 @@ export async function createVendorBill(req) {
             date,
             purchases: purchasesArr,
             invoice,
+            cgst,
+            sgst,
             user
         });
 
@@ -117,5 +119,23 @@ export async function getCustomerForBill(req){
     }
 }
 
+export async function updateGST(req){
+    try{
+        let {vendorBill,cgst,sgst,type} = JSON.parse(req);
+        let bill = type && type==="customer" ? await VendorBill.findById(vendorBill):await Bill.findById(vendorBill);
+        if(bill){
+            bill.cgst=cgst;
+            bill.sgst=sgst;
+            await bill.save();
+            return send({ status:status.SUCCESS, message: "OK" });
+        }
+        else{
+            return send({ status:status.NOT_FOUND, message: "No Bill Found." });
+        }
+    }
+    catch(err){
+        return send({ status:status.INTERNAL_SERVER_ERROR, message: "An error occurred while processing your request" });
+    }
+}
 
 

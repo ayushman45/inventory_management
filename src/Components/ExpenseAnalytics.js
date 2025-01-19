@@ -88,54 +88,54 @@ function DateInput({ mode, setDates,startDate,endDate }) {
 function ExpenseAnalytics(props) {
   const [expenseAmount, setExpenseAmount] = useState(0);
   const [incomeAmount, setIncomeAmount] = useState(0);
-  const [mode, setMode] = useState("monthly");
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [mode, setMode] = useState("daily");
+  const [startDate, setStartDate] = useState(dayjs().startOf("day").toDate());
+  const [endDate, setEndDate] = useState(dayjs().endOf("day").toDate());
 
   const setDates = ({value, dateString,dateArr, type}) => {
     if (type === "single") {
         if(mode==="monthly"){
-            setStartDate(dayjs(dateString).startOf("month").toISOString());
-            setEndDate(dayjs(dateString).endOf("month").toISOString());
+            setStartDate(dayjs(dateString).startOf("month").toDate());
+            setEndDate(dayjs(dateString).endOf("month").toDate());
         }
         else if(mode==="yearly"){
-            setStartDate(dayjs(dateString).startOf("year").toISOString());
-            setEndDate(dayjs(dateString).endOf("year").toISOString());
+            setStartDate(dayjs(dateString).startOf("year").toDate());
+            setEndDate(dayjs(dateString).endOf("year").toDate());
         }
         else if(mode==="quarterly"){
             let quarter = dateString.split("-")[1];
             let year = dateString.split("-")[0];
             switch(quarter){
                 case "Q1":
-                    setStartDate(dayjs(`${year}-01-01`).toISOString());
-                    setEndDate(dayjs(`${year}-03-31`).toISOString());
+                    setStartDate(dayjs(`${year}-01-01`).toDate());
+                    setEndDate(dayjs(`${year}-03-31`).toDate());
                     break;
                 case "Q2":
-                    setStartDate(dayjs(`${year}-04-01`).toISOString());
-                    setEndDate(dayjs(`${year}-06-30`).toISOString());
+                    setStartDate(dayjs(`${year}-04-01`).toDate());
+                    setEndDate(dayjs(`${year}-06-30`).toDate());
                     break;
                 case "Q3":
-                    setStartDate(dayjs(`${year}-07-01`).toISOString());
-                    setEndDate(dayjs(`${year}-09-30`).toISOString());
+                    setStartDate(dayjs(`${year}-07-01`).toDate());
+                    setEndDate(dayjs(`${year}-09-30`).toDate());
                     break;
                 case "Q4":
-                    setStartDate(dayjs(`${year}-10-01`).toISOString());
-                    setEndDate(dayjs(`${year}-12-31`).toISOString());
+                    setStartDate(dayjs(`${year}-10-01`).toDate());
+                    setEndDate(dayjs(`${year}-12-31`).toDate());
                     break;
                 default:
                     let quarter = Math.floor((dayjs(dateString).month() + 2) / 3);
-                    setStartDate(dayjs(`${dayjs(dateString).year()}-${quarter * 3 - 2}-01`).toISOString());
-                    setEndDate(dayjs(`${dayjs(dateString).year()}-${quarter * 3}-31`).toISOString());
+                    setStartDate(dayjs(`${dayjs(dateString).year()}-${quarter * 3 - 2}-01`).toDate());
+                    setEndDate(dayjs(`${dayjs(dateString).year()}-${quarter * 3}-31`).toDate());
                     break;
             }
         }
         else if(mode==="daily"){
-            setStartDate(dayjs(dateString).toISOString());
-            setEndDate(dayjs(dateString).toISOString());
+            setStartDate(dayjs(dateString).toDate());
+            setEndDate(dayjs(dateString).toDate());
         }
         else if(mode==="weekly"){
-            setStartDate(dayjs(dateString).startOf("week").toISOString());
-            setEndDate(dayjs(dateString).endOf("week").toISOString());
+            setStartDate(dayjs(dateString).startOf("week").toDate());
+            setEndDate(dayjs(dateString).endOf("week").toDate());
         }
         else{
             setStartDate(dateString);
@@ -143,8 +143,8 @@ function ExpenseAnalytics(props) {
         }
     } else if (type === "range") {
       if(mode==="quarterly"){
-        setStartDate(dayjs(dateArr[0]).startOf("quarter").toISOString());
-        setEndDate(dayjs(dateArr[1]).endOf("quarter").toISOString());
+        setStartDate(dayjs(dateArr[0]).startOf("quarter").toDate());
+        setEndDate(dayjs(dateArr[1]).endOf("quarter").toDate());
       }
     }
   };
@@ -154,7 +154,10 @@ function ExpenseAnalytics(props) {
       return;
     }
 
-    let res = await axios.get('/api/analytics?startDate='+startDate+'&endDate='+endDate+'&user='+props.user.username);
+    let res = await axios.post('/api/analytics?&user='+props.user.username,{
+      startDate,endDate
+    });
+    console.log(res);
     if (res.status === 200) {
       setExpenseAmount(res.data.debits);
       setIncomeAmount(res.data.credits);
@@ -166,38 +169,45 @@ function ExpenseAnalytics(props) {
   };
 
   useEffect(() => {
+    if(!mode){
+      return;
+    }
     switch (mode) {
       case "daily":
-        setStartDate(dayjs().startOf("day").toISOString());
-        setEndDate(dayjs().endOf("day").toISOString());
+        setStartDate(dayjs().startOf("day").toDate());
+        setEndDate(dayjs().endOf("day").toDate());
         break;
       case "week":
-        setStartDate(dayjs().subtract(6, "days").startOf("day").toISOString());
-        setEndDate(dayjs().endOf("day").toISOString());
+        setStartDate(dayjs().subtract(6, "days").startOf("day").toDate());
+        setEndDate(dayjs().endOf("day").toDate());
         break;
       case "monthly":
-        setStartDate(dayjs().startOf("month").toISOString());
-        setEndDate(dayjs().endOf("month").toISOString());
+        setStartDate(dayjs().startOf("month").toDate());
+        setEndDate(dayjs().endOf("month").toDate());
         break;
       case "quarterly":
-        let quarterStart = dayjs().startOf("quarter").toISOString();
-        let quarterEnd = dayjs().endOf("quarter").toISOString();
+        let quarterStart = dayjs().startOf("quarter").toDate();
+        let quarterEnd = dayjs().endOf("quarter").toDate();
         setStartDate(quarterStart);
         setEndDate(quarterEnd);
         break;
       case "yearly":
-        setStartDate(dayjs().startOf("year").toISOString());
-        setEndDate(dayjs().endOf("year").toISOString());
+        setStartDate(dayjs().startOf("year").toDate());
+        setEndDate(dayjs().endOf("year").toDate());
         break;
       default:
-        setStartDate(dayjs().startOf("day").toISOString());
-        setEndDate(dayjs().endOf("day").toISOString());
+        setStartDate(dayjs().startOf("day").toDate());
+        setEndDate(dayjs().endOf("day").toDate());
         break;
     }
   }, [mode]);
 
   useEffect(() => {
     // Fetch data based on selected mode, start date, and end date
+    console.log({startDate,endDate})
+    if(!startDate || !endDate || !mode){
+      return;
+    }
     getAnalyticsHelper();
   }, [mode,startDate, endDate]);
 
