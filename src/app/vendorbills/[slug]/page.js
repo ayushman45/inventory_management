@@ -70,14 +70,13 @@ function Page() {
       cgst,
       sgst
     }));
-    console.log(res);
     if(JSON.parse(res).status===200){
       window.location.reload();
 
     }
     else{
       message.warning("Some error");
-      
+
     }
 
   }
@@ -183,7 +182,6 @@ function Page() {
         setBill(res.data);
         setCgst(res.data.cgst);
         setSgst(res.data.sgst);
-        console.log(res.data)
         setInvoice(res.data.invoice || "NA")
         
       }

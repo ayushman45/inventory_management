@@ -19,8 +19,6 @@ function ShowTable({productList}){
       if(dat){
         tot+=parseInt(dat);
       }
-      
-      console.log(tot);
     }
     setTotal(tot);
   },[arr]);

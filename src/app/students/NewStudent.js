@@ -1,4 +1,4 @@
-"iuse client";
+"use client";
 
 import { Button, DatePicker, Form, Input, message, Select } from "antd";
 import React, { useRef, useState } from "react";

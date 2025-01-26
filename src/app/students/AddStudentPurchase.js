@@ -63,12 +63,7 @@ function AddStudentPurchase() {
       }
       ind++;
     }
-    console.log({
-      purchases,
-      date: new Date(date),
-      studentId: slug,
-      user,
-    })
+
     let res = await createBill(
       stringifyObject({
         purchases,

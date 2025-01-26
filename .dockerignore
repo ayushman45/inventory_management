@@ -1,0 +1,9 @@
+node_modules
+.next
+package-lock.json
+*.pem
+README.md
+version_file
+.gitignore
+.dockerignore
+Dockerfile

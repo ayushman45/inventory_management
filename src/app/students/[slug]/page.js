@@ -1,10 +1,20 @@
 "use client";
 import { createOrUpdateStudent } from "@/app/api/handlers/handleStudents";
-import { getUser } from "@/helper/token";
+import { getInvUser, getUser } from "@/helper/token";
 import { parseString, stringifyObject } from "@/app/jsonHelper";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Button, message, Modal, Tabs, Typography } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  message,
+  Modal,
+  Select,
+  Tabs,
+  Typography,
+} from "antd";
 import { getLocaleDate } from "@/helper/date";
 import AddStudentPurchase from "../AddStudentPurchase";
 import ViewBills from "../ViewBills";
@@ -13,9 +23,229 @@ import axios from "axios";
 import { getBatchesforUser } from "@/helper/getCourses";
 
 import "./style.css";
-import { addBatchForStudent } from "@/app/api/handlers/handleAddBatches";
+import { addBatchForStudent, getAllBatches } from "@/app/api/handlers/handleAddBatches";
+import { Fees } from "@/backendHelpers/models/fees";
+import { addFees, deleteFees, getFeesForUser } from "@/app/api/handlers/handleFees";
+import dayjs from "dayjs";
 
 const { Title, Paragraph, Text } = Typography;
+
+function FeesObject() {
+  const [fees, setFees] = useState([]);
+  const [batches, setBatches] = useState([]);
+
+  const [batch, setBatch] = useState(null);
+  const [amount, setAmount] = useState(0);
+  const [paymentType, setPaymentType] = useState("upi");
+  const [date, setDate] = useState(dayjs(new Date(Date.now())));
+  const [feesObject,setFeesObject] = useState({});
+  const [allBatches,setAllBatches] = useState([]);
+
+  const { slug } = useParams();
+
+  const handleGetBatch = async () => {
+    let student = await axios.get("/api/students", {
+      headers: {
+        user: getUser(),
+        id: slug,
+      },
+    });
+    let temp = student.data.student.batches;
+    let auxFeesHelper = {}
+    if(temp.length>0){
+      temp.map(t=>{
+        auxFeesHelper[t]=[0,0]
+      })
+    }
+    setFeesObject(auxFeesHelper);
+
+    if (temp.length > 0) {
+      setBatches(temp);
+    }
+  };
+
+  const handleGetFees = async () => {
+    let res = await getFeesForUser(stringifyObject({ id: slug }));
+    if (JSON.parse(res).status === 200) {
+      
+      let feesTemp = JSON.parse(res).fees;
+      setFees(feesTemp);
+      let auxHelper = feesObject;
+      if(feesTemp.length > 0){
+        feesTemp.map(fee=>{
+          auxHelper[fee.batch][1]=fee.amount;
+        })
+        
+      }
+      setFeesObject(auxHelper);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!batch) {
+      message.warning("No batch selected to add fees");
+      return;
+    }
+    let req = JSON.stringify({
+      studentId: slug,
+      batch,
+      date: new Date(date),
+      paymentType,
+      amount,
+      user: getUser(),
+    });
+    let res = await addFees(req);
+    if (JSON.parse(res).status === 200) {
+      globalThis?.window?.location.reload();
+    }
+  };
+
+  const handleDeleteFees = async(id) => {
+    let res = await deleteFees(JSON.stringify({id}));
+    if(JSON.parse(res).status === 200){
+      globalThis?.window?.location.reload();
+
+    }
+
+  }
+
+  const getAllBatchesForUser = async() => {
+    let res = await getAllBatches(JSON.stringify({user:getUser()}));
+    res = JSON.parse(res);
+    if(res.status === 200){
+      setAllBatches(res.batches);
+      let auxFeesHelper = feesObject;
+      console.log(auxFeesHelper)
+      res.batches.map(b=>{
+          if(auxFeesHelper[b.batchName]){
+            auxFeesHelper[b.batchName][0] = b.fees;
+          }
+      })
+      console.log(auxFeesHelper);
+      setFeesObject(auxFeesHelper);
+    }
+  }
+
+  useEffect(() => {
+    handleGetBatch();
+    
+  }, []);
+
+  useEffect(()=>{
+    if(batches.length>0){
+      handleGetFees();
+    }
+  },[batches])
+
+  useEffect(()=>{
+    if(batches.length>0){
+      getAllBatchesForUser();
+    }
+
+  },[batches])
+
+  return (
+    <div>
+      <Form>
+        <Form.Item label="Fees">
+          <Input
+            placeholder="Enter Total Fees Paid"
+            style={{ width: "200px" }}
+            type="Number"
+            onChange={(e) => setAmount(e.currentTarget.value)}
+          />
+        </Form.Item>
+        <Form.Item label="Batch">
+          <Select onChange={(g) => setBatch(g)} style={{ width: "200px" }}>
+            {batches.length > 0 &&
+              batches.map((bat, index) => {
+                return (
+                  <Option key={index + "z"} value={bat}>
+                    {bat}
+                  </Option>
+                );
+              })}
+          </Select>
+        </Form.Item>
+        <Form.Item label="Payment Type">
+          <Select
+            onChange={(g) => setPaymentType(g)}
+            style={{ width: "200px" }}
+          >
+            <Option value="upi">UPI</Option>
+            <Option value="cash">CASH</Option>
+            <Option value="credit-card">Credit Card</Option>
+            <Option value="debit-card">Debit Card</Option>
+            <Option value="bank-transfer">Bank Transfer</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item label="Date of Payment">
+          <DatePicker value={date} onChange={(e) => setDate(e)} />
+        </Form.Item>
+        <Form.Item
+          style={{ display: "flex", flexDirection: "row", gap: "10px" }}
+        >
+          <Button type="primary" onClick={handleSubmit}>
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
+      <br />
+      <br />
+      <h3>Paid Fees</h3>
+      <table>
+        <thead>
+          <tr>
+            <td>Amount</td>
+            <td>Batch</td>
+            <td>Date</td>
+            <td>Payment Type</td>
+            <td></td>
+          </tr>
+        </thead>
+        <tbody>
+          {fees.map((fee, index) => {
+            return (
+              <tr key={fee._id}>
+                <td>{fee.amount}</td>
+                <td>{fee.batch}</td>
+                <td>{dayjs(fee.date).toString().split(' ').slice(0,4).join(' ')}</td>
+                <td>{fee.paymentType}</td>
+                <td><Button type="primary" danger onClick={()=>handleDeleteFees(fee._id)}>Delete</Button></td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <br />
+      <br />
+      <h3>Remaining Fees for Student</h3>
+      <table>
+        <thead>
+          <tr>
+            <td>Batch</td>
+            <td>Total</td>
+            <td>Paid</td>
+            <td>Remaining</td>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(feesObject).map((entry, index) => {
+           let fee = entry[0];
+            return (
+              <tr key={index}>
+                <td>{fee}</td>
+                <td>{feesObject[fee][0]}</td>
+                <td>{feesObject[fee][1]}</td>
+                <td>{parseFloat(feesObject[fee][0])-parseFloat(feesObject[fee][1])}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 function Batches({ id }) {
   const [allBatches, setAllBatches] = useState([]);
@@ -23,7 +253,7 @@ function Batches({ id }) {
   const [show, setShow] = useState(false);
   const { slug } = useParams();
   const [batch, setBatch] = useState("");
-  const [otherBatches,setOtherBatches] = useState([]);
+  const [otherBatches, setOtherBatches] = useState([]);
 
   useEffect(() => {
     if (allBatches > 0) {
@@ -31,13 +261,16 @@ function Batches({ id }) {
     }
   }, [allBatches]);
 
-  const onSubmit = async() => {
-    let res = await addBatchForStudent(JSON.stringify({batchName:JSON.parse(batch).batchName,studentId:slug}));
-    if(JSON.parse(res).status === 200){
+  const onSubmit = async () => {
+    let res = await addBatchForStudent(
+      JSON.stringify({
+        batchName: JSON.parse(batch).batchName,
+        studentId: slug,
+      })
+    );
+    if (JSON.parse(res).status === 200) {
       setShow(false);
-
     }
-
   };
 
   const handleGetBatch = async () => {
@@ -60,8 +293,7 @@ function Batches({ id }) {
       for (let i = 0; i < batchesTemp.length; i++) {
         if (!temp.includes(batchesTemp[i].batchName)) {
           aux.push(batchesTemp[i]);
-        }
-        else{
+        } else {
           aux2.push(batchesTemp[i]);
         }
       }
@@ -70,9 +302,8 @@ function Batches({ id }) {
       setBatch(JSON.stringify(aux[0]));
     }
 
-    if(aux2.length > 0){
+    if (aux2.length > 0) {
       setOtherBatches(aux2);
-
     }
 
     setAllBatches(aux);
@@ -297,10 +528,6 @@ function Student() {
     }
   };
 
-  const onChange = (key) => {
-    console.log(key);
-  };
-
   useEffect(() => {
     if (!student) {
       return;
@@ -369,6 +596,11 @@ function Student() {
         label: "Batches",
         children: <Batches />,
       },
+      {
+        key: "7",
+        label: "View Fees",
+        children: <FeesObject />,
+      },
     ];
 
     setTabItems(items);
@@ -387,7 +619,7 @@ function Student() {
   }
   return (
     <div>
-      <Tabs defaultActiveKey="1" items={tabItems} onChange={onChange} />
+      <Tabs defaultActiveKey="1" items={tabItems} />
       <br />
     </div>
   );

@@ -10,19 +10,18 @@ import { useRouter } from "next/navigation";
 import Header from "@/Components/Header";
 import NewBatch from "./NewBatch";
 import { getLocaleDate } from "@/helper/date";
-import { deleteBatch } from "../api/handlers/handleAddBatches";
+import { changeBatchStatus, deleteBatch } from "../api/handlers/handleAddBatches";
 
-function Toggler({id}){
+function Toggler({id,handleStatusChange}){
 
   return(
-    <Button onClick={()=>console.log(id)}>Change Status</Button>
+    <Button onClick={()=>handleStatusChange(id)}>Change Status</Button>
   )
 }
 
 function Delete({id}){
   const handleDel = async() => {
     let res = await deleteBatch(JSON.stringify({id}));
-    console.log(JSON.parse(res))
     if(JSON.parse(res).status === 200 ){
       window.location.reload();
 
@@ -45,6 +44,13 @@ function Batches() {
     setUser(getUser());
 
   }, []);
+
+  const handleStatusChange = async(id) => {
+    let res = await changeBatchStatus(JSON.stringify({id}));
+    if(JSON.parse(res).status===200){
+      globalThis?.window?.location.reload();
+    }
+  }
 
   const navigate = useRouter();
 
@@ -93,7 +99,7 @@ function Batches() {
       title: "Status Toggle",
       render : (bat)=>{
         return(
-          <Toggler id={bat._id} />
+          <Toggler id={bat._id} handleStatusChange={handleStatusChange} />
         )
       }
     },

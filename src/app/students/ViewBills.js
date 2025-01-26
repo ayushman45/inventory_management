@@ -19,8 +19,6 @@ function ShowTable({productList}){
       if(dat){
         tot+=parseInt(dat);
       }
-      
-      console.log(tot);
     }
     setTotal(tot);
   },[arr]);
@@ -127,7 +125,6 @@ function ViewBills() {
       });
       if(res.status===200){
           setBills(res.data.bills);
-          console.log(res)
       }
     
   };

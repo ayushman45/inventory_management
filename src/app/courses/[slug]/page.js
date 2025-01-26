@@ -85,7 +85,7 @@ function Course() {
   };
 
   const onChange = (key) => {
-    console.log(key);
+    // console.log(key);
   };
 
   useEffect(() => {

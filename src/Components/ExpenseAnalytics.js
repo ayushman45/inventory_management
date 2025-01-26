@@ -157,7 +157,6 @@ function ExpenseAnalytics(props) {
     let res = await axios.post('/api/analytics?&user='+props.user.username,{
       startDate,endDate
     });
-    console.log(res);
     if (res.status === 200) {
       setExpenseAmount(res.data.debits);
       setIncomeAmount(res.data.credits);
@@ -204,12 +203,11 @@ function ExpenseAnalytics(props) {
 
   useEffect(() => {
     // Fetch data based on selected mode, start date, and end date
-    console.log({startDate,endDate})
     if(!startDate || !endDate || !mode){
       return;
     }
     getAnalyticsHelper();
-  }, [mode,startDate, endDate]);
+  }, [startDate, endDate]);
 
   return (
     <div className="expense-analytics-container">
@@ -228,7 +226,7 @@ function ExpenseAnalytics(props) {
             <br />
             <br />
             <Select
-              defaultValue="monthly"
+              defaultValue="daily"
               style={{ width: 120 }}
               onChange={(value) => {
                 setMode(value);
@@ -237,7 +235,7 @@ function ExpenseAnalytics(props) {
               <Select.Option value="daily">Daily</Select.Option>
               <Select.Option value="week">Week</Select.Option>
               <Select.Option value="monthly">Monthly</Select.Option>
-              <Select.Option value="quarterly">Quarterly</Select.Option>
+              {/* <Select.Option value="quarterly">Quarterly</Select.Option> */}
               <Select.Option value="yearly">Yearly</Select.Option>
               <Select.Option value="custom">Custom</Select.Option>
             </Select>

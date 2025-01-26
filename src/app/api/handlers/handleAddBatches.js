@@ -24,10 +24,38 @@ export const addBatchForStudent = async(req) => {
 
 }
 
+export const getAllBatches = async(req) => {
+    try{
+        let {user} = JSON.parse(req);
+        let batches = await Batch.find({user});
+        return JSON.stringify({status:200,batches});
+    }
+    catch(e){
+        console.log(e.message)
+        return JSON.stringify({status:500});
+    }
+}
+
 export const deleteBatch = async (req) => {
     try{
         let {id} = JSON.parse(req);
         await Batch.deleteOne({_id:id});
+        return JSON.stringify({status:200});
+
+    }
+    catch(e){
+        console.log(e.message);
+        return JSON.stringify({status:500});
+
+    }
+}
+
+export const changeBatchStatus = async (req) => {
+    try{
+        let {id} = JSON.parse(req);
+        let batch = await Batch.findOne({_id:id});
+        batch.active = !batch.active;
+        await batch.save();
         return JSON.stringify({status:200});
 
     }

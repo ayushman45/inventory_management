@@ -203,7 +203,6 @@ function Page() {
         sgst,
         type:"customer"
       }));
-      console.log(res);
       if(JSON.parse(res).status===200){
         window.location.reload();
   

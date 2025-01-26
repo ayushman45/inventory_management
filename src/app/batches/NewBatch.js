@@ -6,6 +6,7 @@ import { getInvUser, getUser } from "../../helper/token";
 import { createOrUpdateBatch } from "../api/handlers/handleCourses";
 import { parseString, stringifyObject } from "../jsonHelper";
 import { getCoursesForUser } from "@/helper/getCourses";
+import { changeBatchStatus } from "../api/handlers/handleAddBatches";
 
 function NewBatch({ onClose,courses }) {
   const nameRef = useRef(null);
@@ -72,6 +73,7 @@ function NewBatch({ onClose,courses }) {
         </Select>
         </Form.Item>
         <Form.Item>
+          <label>Fees:</label>
           <Input onChange={(e)=>setFees(e.currentTarget.value)} value={fees} />
         </Form.Item>
         <Form.Item>

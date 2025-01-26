@@ -6,6 +6,7 @@ import { Expense } from "@/backendHelpers/models/expense"
 import { VendorDebit } from "@/backendHelpers/models/vendorDebit"
 import { Payment } from "@/backendHelpers/models/payment"
 import { response } from "../handlers/sendToFrontEnd"
+import { Fees } from "@/backendHelpers/models/fees"
 
 export async function POST(req){
     let url = new URLSearchParams(req.url)
@@ -23,21 +24,23 @@ export async function POST(req){
         let credits = 0;
         let debits = 0;
         let expenses = await Expense.find({user, date:{$gte:start, $lte:end}})
-        console.log(expenses)
         if(expenses){
             debits += expenses.reduce((acc, curr) => acc + curr.amount, 0);
         }
         let vendorDebits = await VendorDebit.find({user, date:{$gte:start, $lte:end}})
-        console.log(vendorDebits)
         if(vendorDebits){
             debits += vendorDebits.reduce((acc, curr) => acc + curr.amount, 0);
         }
         let incomes = await Payment.find({user, date:{$gte:start, $lte:end}})
-        console.log(incomes)
         if(incomes){
             credits += incomes.reduce((acc, curr) => acc + curr.amount, 0);
         }
-        return response({credits, debits}, status.SUCCESS);
+
+        let fees = await Fees.find({user, date:{$gte:start, $lte:end}})
+        if(fees){
+            credits += fees.reduce((acc, curr) => acc + curr.amount, 0);
+        }
+        return response({credits, debits, allData:JSON.stringify({expenses, vendorDebits,incomes,fees})}, status.SUCCESS);
     }
     catch(err){
         console.error(err.message);
