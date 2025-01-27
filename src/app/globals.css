@@ -117,3 +117,20 @@ body{
     text-align: center;
     font-size: 18px;
 }
+
+.data-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    border-radius: 7px;
+}
+
+.data-row-in{
+    background: linear-gradient(315deg, hsla(152, 100%, 50%, 1) 0%, hsla(0, 0%, 100%, 1) 120%);
+}
+
+.data-row-out{
+    background: linear-gradient(315deg, rgb(255, 0, 0) 0%, hsla(0, 0%, 100%, 1) 120%);
+}
