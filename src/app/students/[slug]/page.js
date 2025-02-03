@@ -23,7 +23,7 @@ import axios from "axios";
 import { getBatchesforUser } from "@/helper/getCourses";
 
 import "./style.css";
-import { addBatchForStudent, getAllBatches } from "@/app/api/handlers/handleAddBatches";
+import { addBatchForStudent, deleteBatchForStudent, getAllBatches } from "@/app/api/handlers/handleAddBatches";
 import { Fees } from "@/backendHelpers/models/fees";
 import { addFees, deleteFees, getFeesForUser } from "@/app/api/handlers/handleFees";
 import dayjs from "dayjs";
@@ -73,7 +73,7 @@ function FeesObject() {
       let auxHelper = feesObject;
       if(feesTemp.length > 0){
         feesTemp.map(fee=>{
-          auxHelper[fee.batch][1]=fee.amount;
+          auxHelper[fee.batch][1]=parseInt(auxHelper[fee.batch][1])+fee.amount;
         })
         
       }
@@ -180,7 +180,7 @@ function FeesObject() {
           </Select>
         </Form.Item>
         <Form.Item label="Date of Payment">
-          <DatePicker value={date} onChange={(e) => setDate(e)} />
+          <DatePicker value={date} onChange={(e) => setDate(dayjs(new Date(e.endOf('day'))))} />
         </Form.Item>
         <Form.Item
           style={{ display: "flex", flexDirection: "row", gap: "10px" }}
@@ -273,6 +273,17 @@ function Batches({ id }) {
     }
   };
 
+  const deleteFromBatch = async(batch) => {
+    let res = await deleteBatchForStudent(JSON.stringify({batch,id:slug}));
+    if(JSON.parse(res).status === 200){
+      message.success("Batch deleted");
+      globalThis?.window?.location.reload();
+    }
+    else{
+      message.error("Unable to delte batch !!")
+    }
+  }
+
   const handleGetBatch = async () => {
     let student = await axios.get("/api/students", {
       headers: {
@@ -338,7 +349,7 @@ function Batches({ id }) {
                     <td>{bat.active ? "Active" : "Not Active"}</td>
                     <td>{bat.courseName}</td>
                     <td>
-                      <Button danger>Delete from Batch</Button>
+                      <Button danger onClick={()=>deleteFromBatch(bat.batchName)}>Delete from Batch</Button>
                     </td>
                   </tr>
                 );

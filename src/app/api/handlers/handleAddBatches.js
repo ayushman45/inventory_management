@@ -65,3 +65,28 @@ export const changeBatchStatus = async (req) => {
 
     }
 }
+
+export const deleteBatchForStudent = async (req) => {
+    try{
+        let {id,batch} = JSON.parse(req);
+        let student = await Student.findById(id);
+        let temp = []
+        if(student.batches.length > 0){
+            student.batches.forEach(element => {
+                if(element!==batch){
+                    temp.push(element);
+
+                }
+
+            });
+
+        }
+        student.batches = temp;
+        await student.save();
+        return JSON.stringify({status:200});
+    }
+    catch(e){
+        console.log(e.message);
+        return JSON.stringify({status:500});
+    }
+}

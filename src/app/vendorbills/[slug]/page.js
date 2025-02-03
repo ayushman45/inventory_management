@@ -68,8 +68,11 @@ function Page() {
     let res = await updateGST(JSON.stringify({
       vendorBill:slug,
       cgst,
-      sgst
+      sgst,
+      type:"vendor"
     }));
+
+    console.log(JSON.parse(res));
     if(JSON.parse(res).status===200){
       window.location.reload();
 
@@ -280,9 +283,15 @@ function Page() {
       <p>Total Amount: ₹{convertAmountAddCommas(Math.round(totalAmount))}</p>
       <p>Total Paid : ₹{convertAmountAddCommas(Math.round(totalPaid))}</p>
       <p>CGST: ₹{convertAmountAddCommas(Math.round(totalAmount*(bill.cgst||0)/100))}</p>
-      <Input value={cgst} onChange={(e)=>setCgst(e.currentTarget.value)} style={{width:"200px"}} />
+      <Input value={cgst} onChange={(e)=>{
+        setCgst(e.currentTarget.value);
+        bill.cgst = e.currentTarget.value;
+        }} style={{width:"200px"}} />
       <p>SGST: ₹{convertAmountAddCommas(Math.round(totalAmount*(bill.sgst||0)/100))}</p>
-      <Input value={sgst} onChange={(e)=>setSgst(e.currentTarget.value)} style={{width:"200px"}} />
+      <Input value={sgst} onChange={(e)=>{
+        setSgst(e.currentTarget.value);
+        bill.sgst = e.currentTarget.value;
+        }} style={{width:"200px"}} />
       <br />
       <br />
       <Button onClick={handleUpdateGST}>Update GST</Button>

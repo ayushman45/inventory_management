@@ -8,6 +8,7 @@ import { VendorPurchase } from "../../../backendHelpers/models/vendorPurchase";
 import { VendorBill } from "../../../backendHelpers/models/vendorBill";
 import { Product } from "../../../backendHelpers/models/product";
 import { Bill } from "../../../backendHelpers/models/bill";
+import { Solitreo } from "next/font/google";
 
 export async function createVendorBill(req) {
     try {
@@ -122,7 +123,7 @@ export async function getCustomerForBill(req){
 export async function updateGST(req){
     try{
         let {vendorBill,cgst,sgst,type} = JSON.parse(req);
-        let bill = type && type==="customer" ? await VendorBill.findById(vendorBill):await Bill.findById(vendorBill);
+        let bill = type && type==="vendor" ? await VendorBill.findById(vendorBill):await Bill.findById(vendorBill);
         if(bill){
             bill.cgst=cgst;
             bill.sgst=sgst;
@@ -134,6 +135,7 @@ export async function updateGST(req){
         }
     }
     catch(err){
+        console.log(err.message)
         return send({ status:status.INTERNAL_SERVER_ERROR, message: "An error occurred while processing your request" });
     }
 }
