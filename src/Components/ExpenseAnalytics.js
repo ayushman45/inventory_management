@@ -218,6 +218,7 @@ function ExpenseAnalytics(props) {
     temp.sort((a, b) => new Date(a.date) - new Date(b.date));
 
     setAllData(temp);
+    console.log({temp})
   };
 
   const getAnalyticsHelper = async () => {
@@ -351,7 +352,7 @@ function ExpenseAnalytics(props) {
           </div>
         </div>
       </div>
-      {allData && (
+      {allData?.length>0 && (
         <Table dataSource={allData} columns={columns} rowKey={"id"} style={{padding:"0"}}/>
       )}
     </div>

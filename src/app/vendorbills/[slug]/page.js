@@ -421,7 +421,7 @@ function Page() {
         Date:
         <DatePicker
           onChange={(e, date) => {
-            setPayingDate(date);
+            setPayingDate(dayjs(date).startOf('day'));
           }}
         />
       </label>
